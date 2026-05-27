@@ -20,11 +20,6 @@ ol {
   list-style: none;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
 /*********************STYLE PAGINA*********************/
 
 /* .title-nav {
@@ -34,14 +29,189 @@ a {
   font-style: normal;
 } */
 
+/* .nunito-<uniquifier> {
+  font-family: "Nunito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+} */
 
-.logo-div{
-    display: flex;
-    align-items: center;
+/* .slackey-regular {
+  font-family: "Slackey", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+} */
 
+/* .unkempt-regular {
+  font-family: "Unkempt", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 
+.unkempt-bold {
+  font-family: "Unkempt", cursive;
+  font-weight: 700;
+  font-style: normal;
+} */
 
-.logo-div img{
-    width: 20%;
+/* .galindo-regular {
+  font-family: "Galindo", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+} */
+
+/* .gorditas-regular {
+  font-family: "Gorditas", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.gorditas-bold {
+  font-family: "Gorditas", serif;
+  font-weight: 700;
+  font-style: normal;
+} */
+
+.container-general {
+  width: 100%;
+  height: 100vh;
+  padding: 20px 15px;
+}
+.navbar {
+  /* border: 2px solid #000000;
+  box-shadow: 8px 8px 8px black; */
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.logo-div {
+  display: flex;
+  align-items: center;
+  width: 30%;
+  padding: 0px 20px;
+}
+
+.logo-div img {
+  width: 50%;
+}
+
+.nav-elements {
+  width: 30%;
+  padding: 0px 48px;
+}
+
+.list-elements-nav {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+li a {
+  text-decoration: none;
+  color: black;
+  text-transform: uppercase;
+  font-family: "Unkempt", cursive;
+  font-weight: 1000;
+
+  font-size: 0.9rem;
+}
+
+li a:hover {
+  color: rgb(255, 5, 5);
+}
+
+.title-nav {
+  width: 30%;
+  font-family: "Slackey", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  text-align: center;
+}
+
+.title-nav h4 {
+  font-size: 2.5rem;
+}
+
+/************************************ HERO *******************************+*/
+
+.hero {
+  margin-top: 5px;
+  max-width: 80%;
+}
+
+.hero-title {
+  font-family: "Galindo", sans-serif;
+  text-align: center;
+  align-self: center;
+}
+
+.hero h4 {
+  font-family: "Galindo", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.border-separator {
+  border-bottom: 3px solid black;
+  width: 80%;
+  display: block;
+  margin: 0 auto;
+}
+
+/********************************** CARDS ******************+*/
+
+.box-trips {
+  max-width: 80%;
+  height: 200px;
+}
+
+.cards-title h3 {
+  font-family: "Nunito", sans-serif;
+
+  font-size: 1.2rem;
+}
+
+.container-cards {
+  border: 2px solid black;
+  height: 400px;
+  padding: 20px 0px;
+}
+
+.trip-card {
+  max-width: 300px;
+  border: 1px solid black;
+  border-radius: 20px 20px 20px 20px;
+  overflow: hidden;
+  padding-bottom: 20px;
+}
+
+.text-card {
+  font-family: "Nunito", sans-serif;
+  text-align: center;
+  
+  padding: 2px 3px;
+}
+
+.text-card h6{
+  font-size: 20px;
+   font-weight:700;
+}
+
+.button-card {
+  text-align: center;
+  padding: 0px 3px;
+}
+
+.img-card img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
 }
