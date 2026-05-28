@@ -1,0 +1,168 @@
+:root {
+  --azzuro:  #00bbf9;
+  --banana: #fee440;
+   --travel-dark: #121212;
+  --travel-navy: #033c4f;
+  --travel-deep: #062631;
+  --white: #ffffff;
+  --indie: "Indie Flower";
+}
+
+/***************************************RESET CSS ***********************/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background: #121212;
+  font-family: "Indie Flower";
+  font-weight: 400;
+  font-style: normal;
+  color: var(--travel-deep);
+}
+
+/* .slackey-regular {
+  font-family: "Slackey", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+} */
+
+
+/* .indie-flower-regular {
+  font-family: "Indie Flower", cursive;
+  font-weight: 400;
+  font-style: normal;
+} */
+
+
+/* .unkempt-regular {
+  font-family: "Unkempt", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.unkempt-bold {
+  font-family: "Unkempt", cursive;
+  font-weight: 700;
+  font-style: normal;
+} */
+
+/* From Uiverse.io by ayyjayy2 */ 
+.form {
+  --font-color: #323232;
+  --font-color-sub: #666;
+  --bg-color: beige;
+  --main-color: black;
+  background-color: var(--azzuro);
+  padding: 80px 20px;
+  background: lightblue;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 2px 9px 8px var(--white);
+}
+
+.title {
+    text-align: center;
+  color: var(--travel-dark);
+  font-family: "Slackey", sans-serif;
+  font-weight: 900;
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+  gap: 20px;
+}
+
+.title span {
+  color: var(--travel-navy);
+  font-weight: 600;
+  font-size: 1.4rem;
+  font-family: "Indie Flower";
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--banana);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--font-color);
+  padding: 5px 10px;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--font-color-sub);
+  opacity: 0.8;
+}
+
+.input:focus {
+  border: 2px solid red;
+}
+
+.login-with {
+  display: flex;
+  gap: 20px;
+}
+
+
+/* .icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--main-color);
+} */
+
+
+.button-confirm {
+  margin: 50px auto 0 auto;
+  width: 120px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--banana);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--font-color);
+  cursor: pointer;
+
+   transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.button-confirm:disabled{
+    background-color: var(--font-color-sub);
+    cursor:not-allowed;
+}
+
+.button-confirm:not(:disabled):active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px var(--main-color);
+}
