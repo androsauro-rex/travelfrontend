@@ -1,3 +1,13 @@
+:root {
+  --azzuro:  #00bbf9;
+  --banana: #fee440;
+   --travel-dark: #121212;
+  --travel-navy: #033c4f;
+  --travel-deep: #062631;
+  --white: #ffffff;
+  --indie: "Indie Flower";
+}
+
 /***************************************RESET CSS ***********************/
 
 *,
@@ -33,15 +43,7 @@ body {
   color: #fff;
 }
 
-:root {
-  --azzuro:  #00bbf9;
-  --banana: #fee440;
-   --travel-dark: #121212;
-  --travel-navy: #033c4f;
-  --travel-deep: #062631;
-  --white: #ffffff;
-  --indie: "Indie Flower";
-}
+
 
 /*********************STYLE PAGINA*********************/
 
