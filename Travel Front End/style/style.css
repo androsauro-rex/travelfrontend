@@ -115,12 +115,18 @@ body {
 .logo img {
   width: 100%;
 }
+
 .title-header {
   width: 100%;
+  height: 220px; /* Aumentato leggermente per dare respiro a testo + aereo */
+  position: relative;
+  overflow: hidden;
   display: flex;
-  align-items: center;
+  flex-direction: column; /* Allinea verticalmente titolo e tracciato */
   justify-content: center;
+  align-items: center;
 }
+
 .title-header h3 {
   font-family: "Slackey", sans-serif;
   font-weight: 400;
@@ -435,7 +441,6 @@ body {
 
 .text-part {
   display: inline-block;
-  position: relative;
   transform: translateX(0);
   animation-duration: 2s;
   animation-timing-function: ease-out;
@@ -469,6 +474,46 @@ body {
     transform: translateX(0);
   }
 }
+
+
+.title-header .plane {
+  position: absolute;
+  top: 0;
+  left: -140px; 
+  width: 120px;
+  height: 40px;
+  animation-name: flyUnderTitle;
+  animation-duration: 12s; 
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1; 
+}
+
+.title-header .plane-track {
+  position: absolute;
+  bottom: 15px; /* Posizionalo sotto il testo (regola a piacimento) */
+  left: 0;
+  width: 100%;
+  height: 50px;
+  overflow: visible; /* Permette all'aereo di entrare e uscire dai margini dello schermo */
+  pointer-events: none; /* Evita che blocchi eventuali click sul testo */
+}
+
+.plane img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@keyframes flyUnderTitle {
+  0% {
+    transform: translateX(-120px);
+  }
+  100% {
+    transform: translateX(calc(100% + 120px));
+  }
+}
+
 
 
 .cards-container{
@@ -622,31 +667,16 @@ button:active {
 }
 
 
-.plane {
-  position: absolute;
-  top: 70%;
-  left: -50px;
-  width: 30px;
-  animation: flyCurve 3.5s linear infinite;
-}
-
-
-
-
-@keyframes flyCurve {
+@keyframes flyUnderTitle {
   0% {
-    transform: translate(-100px, 20px) rotate(10deg);
-  }
-  25% {
-    transform: translate(25vw, 0px) rotate(5deg);
+    left: -140px;
+    transform: translateY(10px) rotate(5deg);
   }
   50% {
-    transform: translate(50vw, -10px) rotate(0deg);
-  }
-  75% {
-    transform: translate(75vw, 5px) rotate(-5deg);
+    transform: translateY(-5px) rotate(0deg);
   }
   100% {
-    transform: translate(110vw, 20px) rotate(0deg);
+    left: 110%; /* Supera la fine del viewport a destra */
+    transform: translateY(10px) rotate(-5deg);
   }
 }
