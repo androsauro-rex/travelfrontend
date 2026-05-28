@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Registrazione</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Slackey&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-slate-900 to-black min-h-screen flex items-center justify-center p-4">
+
+  <!-- CARD -->
+  <div class="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+
+    <!-- HEADER -->
+    <div class="text-center p-6 border-b border-white/10">
+      <h2 class="text-white text-2xl font-bold">Crea il tuo account</h2>
+      <p class="text-gray-300 text-sm mt-1">Registrati in pochi secondi</p>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="flex justify-center gap-4 p-6">
+
+      <button class="w-12 h-12 rounded-lg bg-white/10 hover:bg-white/20 transition flex items-center justify-center text-white">
+        f
+      </button>
+
+      <button class="w-12 h-12 rounded-lg bg-white/10 hover:bg-white/20 transition flex items-center justify-center text-white">
+        I
+      </button>
+
+      <button class="w-12 h-12 rounded-lg bg-white/10 hover:bg-white/20 transition flex items-center justify-center text-white">
+        G
+      </button>
+
+    </div>
+
+    <div class="text-center text-gray-400 text-xs">oppure</div>
+
+    <!-- FORM -->
+    <form class="p-6 space-y-4">
+
+      <input type="text" placeholder="Nome" required
+        class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500">
+
+      <input type="text" placeholder="Cognome" required
+        class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500">
+
+        <input type="text" placeholder="Username" required
+        class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500">
+
+        <input type="age" placeholder="Età" required min="18"
+        class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500">
+
+      <input type="email" placeholder="Email" required
+        class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500">
+
+      <input type="password" placeholder="Password" required minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500">
+
+      <!-- CHECKBOX -->
+      <div class="flex items-start gap-2 text-sm text-gray-300">
+        <input type="checkbox" class="mt-1">
+        <label>Accetto termini e condizioni</label>
+      </div>
+
+      <!-- BUTTON -->
+      <button type="submit"
+        class="w-full py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold hover:scale-105 transition">
+        Registrati
+      </button>
+
+      <p class="text-center text-gray-400 text-sm">  Hai già un account? <span class="text-white font-semibold cursor-pointer">Accedi</span>
+      </p>
+
+    </form>
+
+  </div>
+
+</body>
+
+</html>
