@@ -24,14 +24,22 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   background: #121212;
   font-family: "Slackey", sans-serif;
   font-weight: 400;
   font-style: normal;
   color: #fff;
-  overflow: hidden;
+}
+
+:root {
+  --azzuro:  #00bbf9;
+  --banana: #fee440;
+   --travel-dark: #121212;
+  --travel-navy: #033c4f;
+  --travel-deep: #062631;
+  --white: #ffffff;
 }
 
 /*********************STYLE PAGINA*********************/
@@ -459,5 +467,186 @@ body {
   }
   100% {
     transform: translateX(0);
+  }
+}
+
+
+.cards-container{
+  width: 100%;
+  padding: 30px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+    
+}
+
+
+.trips-container{
+  width: 90%;
+  min-height: 500px;
+  padding: 1rem 2rem;
+  border: 2px solid white;
+  box-shadow: 8px 12px 2px rgb(255, 255, 255);
+}
+
+.title-cards{
+  height: 20%;
+  width: 100%;
+  text-align: center;
+}
+
+.title-cards h3{
+ font-family: "Indie Flower", cursive;
+  font-weight: 600;
+  font-style:normal;
+  font-size: 2.3rem;
+}
+
+
+.cards-sequence {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px 0;
+}
+
+.card {
+  width: calc(33.333% - 20px);
+  min-width: 280px;
+  max-width: 320px;
+  height: 220px;
+
+  position: relative;
+  background-color: #f2f2f2;
+  border-radius: 10px;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  perspective: 1000px;
+  box-shadow: 0 0 0 5px #ffffff80;
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+   fill: #333;
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+}
+
+.card__content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  background-color: #f2f2f2;
+  transform: rotateX(-90deg);
+  transform-origin: bottom;
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: 600;
+  font-style:normal;
+  backdrop-filter: blur(4px);
+  
+}
+
+.card:hover .card__content {
+  opacity: 1;
+  transform: rotateX(0deg);
+}
+
+.card__title {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+  font-weight: 700;
+}
+
+.card:hover svg {
+  scale: 0;
+}
+
+.card__description {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: var(--travel-dark);
+  line-height: 1.4;
+}
+
+
+.card-button {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* From Uiverse.io by arieshiphop */ 
+button {
+ font-size: 12px;
+ padding: 0.5em 2em;
+ border: transparent;
+ box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+ background: dodgerblue;
+ color: white;
+ border-radius: 4px;
+}
+
+button:hover {
+ background: rgb(2,0,36);
+ background: linear-gradient(90deg, rgba(30,144,255,1) 0%, rgba(0,212,255,1) 100%);
+}
+
+button:active {
+ transform: translate(0em, 0.2em);
+}
+
+
+.plane {
+  position: absolute;
+  top: 70%;
+  left: -50px;
+  width: 30px;
+  animation: flyCurve 3.5s linear infinite;
+}
+
+
+
+
+@keyframes flyCurve {
+  0% {
+    transform: translate(-100px, 20px) rotate(10deg);
+  }
+  25% {
+    transform: translate(25vw, 0px) rotate(5deg);
+  }
+  50% {
+    transform: translate(50vw, -10px) rotate(0deg);
+  }
+  75% {
+    transform: translate(75vw, 5px) rotate(-5deg);
+  }
+  100% {
+    transform: translate(110vw, 20px) rotate(0deg);
   }
 }
