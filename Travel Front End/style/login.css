@@ -36,7 +36,11 @@ body {
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  background: #121212;
+  background: linear-gradient(
+    135deg,
+    var(--travel-dark),
+    var(--travel-deep),
+    var(--travel-navy));
   font-family: "Indie Flower";
   font-weight: 400;
   font-style: normal;
