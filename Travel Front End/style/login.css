@@ -166,3 +166,11 @@ body {
   transform: translate(4px, 4px);
   box-shadow: 0px 0px var(--main-color);
 }
+
+
+.registrazione-div{
+  padding: 20px 0px 0px 0px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  font-family: "Indie Flower";
+}
