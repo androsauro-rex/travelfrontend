@@ -6,6 +6,11 @@
   --travel-deep: #062631;
   --white: #ffffff;
   --indie: "Indie Flower";
+  --gradiente:   background: linear-gradient(
+    135deg,
+    var(--azzuro),
+    var(--travel-deep),
+    var(--travel-dark));
 }
 
 /***************************************RESET CSS ***********************/
