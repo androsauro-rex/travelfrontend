@@ -45,17 +45,17 @@
     <!-- FORM -->
     <form>
 
-      <input type="text" placeholder="Nome" required>
+      <input type="text" placeholder="Nome" required min maxlength="128">
 
-      <input type="text" placeholder="Cognome" required>
+      <input type="text" placeholder="Cognome" required maxlength="128">
 
-      <input type="text" placeholder="Nickname" required minlength="4">
+      <input type="text" placeholder="Nickname" required minlength="50">
 
       <input type="number" placeholder="Età" required min="18">
 
       <input type="email" placeholder="Email" required>
 
-      <input type="password" placeholder="Password" required minlength="8"
+      <input type="password" placeholder="Password" required minlength="6" maxlength="20"
              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$">
 
       <!-- CHECKBOX -->
