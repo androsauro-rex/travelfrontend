@@ -1,236 +1,359 @@
 <!doctype html>
 <html lang="it">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TravelBuddy</title>
-    <link rel="stylesheet" href="style/style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Slackey&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
-  </head>
-  <body>
-    <div class="container-general">
-      <div class="title-header">
-        <div class="split-text-container">
-          <span class="text-part left" style="color: #fee440">Travel</span>
-          <span class="text-part right" style="color: #00bbf9">Buddy</span>
-        </div>
-         <!-- AEREO -->
-    <div class="plane-track">
-    <div class="plane">
-      <img src="assets/plane.png" alt="plane">
-    </div>
-  </div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TravelBuddy - Organizza i tuoi itinerari di viaggio</title>
+  <link rel="stylesheet" href="style/style.css" />
+  
+  <!-- GOOGLE FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- FAVICON -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+</head>
+<body>
+  <!-- ==================== NAVIGATION ==================== -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <span class="brand-text">Travel<span class="brand-highlight">Buddy</span></span>
       </div>
-      <!-- HEADER SECTION -->
-      <div class="container-header">
-        <div class="header-section">
-          <!-- RIGHT SIDE HERO -->
-          <div class="right-header">
-            <div class="logo">
-              <img src="assets/logo-esempio.png" alt="logo">
-            </div>
-          </div>
-          <!-- LEFT SIDE HERO -->
-          <div class="left-header">
-            <div class="slogan">
-              <p>
-                L'amico di viaggio che non dimentica mai nulla <br />
-                <span style="color: rgb(194, 56, 56)">(a differenza tua)</span>
-              </p>
-            </div>
-            <div class="button-header">
-              <!-- From Uiverse.io by himanshu9682 -->
-              <div class="container">
-                <a href="login.html" class="button type--C">
-                  <div class="button__line"></div>
-                  <div class="button__line"></div>
-                  <span class="button__text">Accedi</span>
-                  <div class="button__drow1"></div>
-                  <div class="button__drow2"></div>
-                </a>
-              </div>
-              <div class="container">
-                <a href="registrazione.html" class="button type--C">
-                  <div class="button__line"></div>
-                  <div class="button__line"></div>
-                  <span class="button__text">Registrati</span>
-                  <div class="button__drow1"></div>
-                  <div class="button__drow2"></div>
-                </a>
-              </div>
-            </div>
-          </div>
+      <ul class="navbar-menu">
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#itinerari" class="nav-link">Itinerari</a></li>
+        <li><a href="#about" class="nav-link">Chi Siamo</a></li>
+        <li><a href="login.html" class="nav-link">Accedi</a></li>
+      </ul>
+      <a href="registrazione.html" class="btn-primary">Registrati</a>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Il tuo <span class="highlight-accent">pianificatore di viaggi</span> intelligente
+        </h1>
+        <p class="hero-subtitle">
+          Organizza ogni dettaglio del tuo viaggio senza dimenticare nulla. <br />
+          Che tu sia un viaggiatore spontaneo o un planner meticoloso, TravelBuddy è per te.
+        </p>
+        <div class="hero-cta">
+          <a href="registrazione.html" class="btn-primary btn-large">Inizia Gratuitamente</a>
+          <a href="#itinerari" class="btn-secondary btn-large">Scopri gli Itinerari</a>
+        </div>
+
+        <!-- PLANE ANIMATION -->
+        <div class="plane-animation">
+          <div class="plane-icon">✈️</div>
         </div>
       </div>
 
-      <!-- CARDS SECTION -->
-      <div class="cards-container">
-        <div class="trips-container">
-          <div class="title-cards">
-            <h3>Gli itinerari più popolari:</h3>
+      <div class="hero-visual">
+        <div class="hero-card">
+          <div class="card-header-visual">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
           </div>
-          <div class="cards-sequence">
-            <div class="card">
-              <img src="assets/Reggio Calabria.jpg" alt="reggio-calabria">
-              
-             
-              <div class="card__content">
-                <p class="card__title">Un weekend a Reggio Calabria</p>
-                <p class="card__description">
-                  Tra tonnellate di gelato e uno dei più belli tramonti che ho visto in vita mia, sono arrivato alla conclusione che sarei dovuto rimanere ancora un po'.
-                </p>
-              </div>
-              <div class="card-button">
-                <button class="btn-card">Guarda l'itinerario</button>
-              </div>
-            </div>
-            <div class="card">
-              <img src="assets/Shangai.jpg" alt="shangai">
-               
-              </>
-              <div class="card__content">
-                <p class="card__title">Notti a Shanghai</p>
-                <p class="card__description">
-                 Luci ovunque, grattacieli che sembrano toccare il cielo e la sensazione costante di essere dentro un altro mondo.
-                </p>
-              </div>
-              <div class="card-button">
-                <button class="btn-card">Guarda l'itinerario</button>
-              </div>
-            </div>
-            <div class="card">
-              <img src="assets/sanpietroburgo.jpg" alt="san-pietroburgo">
-              <div class="card__content">
-                <p class="card__title">Inverno a San Pietroburgo</p>
-                <p class="card__description">
-                  Palazzi enormi, neve ovunque e un silenzio poetico che sembra raccontarmi delle favole meravigliose.
-                </p>
-              </div>
-              <div class="card-button">
-                <button class="btn-card">Guarda l'itinerario</button>
-              </div>
-            </div>
-            <div class="card">
-              <img src="assets/cancun-quintana-roo-maya-vacanze.jpg" alt="cancun">
-              <div class="card__content">
-                <p class="card__title">Un tuffo a Cancún</p>
-                <p class="card__description">
-                 Tra mare turchese e notti infinite, ho perso il senso del tempo… e forse anche un po’ di me stesso.
-                </p>
-              </div>
-              <div class="card-button">
-                <button class="btn-card">Guarda l'itinerario</button>
-              </div>
-            </div>
-            <div class="card">
-              <img src="assets/riyah.jpg" alt="riyadh">   
-              </img>
-              <div class="card__content">
-                <p class="card__title">Riyadh, luce nel deserto</p>
-                <p class="card__description">
-                  Tra modernità e sabbia, una città che meravigliosa che ti rimane addosso.
-                </p>
-              </div>
-              <div class="card-button">
-                <button class="btn-card">Guarda l'itinerario</button>
-              </div>
-            </div>
-            <div class="card">
-              <img src="assets/Vista_de_la_Villa_Imperial_de_Potosí.jpg" alt="potosi">   
+          <div class="card-content-visual">
+            <p>📍 Itinerari organizzati</p>
+            <p>✅ Checklist intelligenti</p>
+            <p>🌍 Condividi con amici</p>
+            <p>💡 Suggerimenti AI</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-              <div class="card__content">
-                <p class="card__title">Sopra le nuvole a Potosí</p>
-                <p class="card__description">
-                  L’aria è sottile, le strade sono ripide e ogni passo sembra più pesante del precedente, ma il mondo da quassù è un’altra cosa.
-                </p>
-              </div>
-              <div class="card-button">
-                <button id="btn-card">Guarda l'itinerario</button>
-              </div>
-            </div>
+  <!-- ==================== FEATURES SECTION ==================== -->
+  <section class="features" id="features">
+    <div class="features-container">
+      <h2 class="section-title">Perché scegliere TravelBuddy?</h2>
+      <div class="features-grid">
+        
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <h3>Organizza con Facilità</h3>
+          <p>Crea itinerari dettagliati, gestisci prenotazioni e traccia tutte le informazioni in un unico posto.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🤝</div>
+          <h3>Collabora con gli Amici</h3>
+          <p>Condividi i tuoi piani, coordina le attività e decidi insieme senza confusione.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3>Suggerimenti Intelligenti</h3>
+          <p>Ricevi raccomandazioni personalizzate basate sui tuoi gusti e le tue preferenze di viaggio.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">✅</div>
+          <h3>Non Dimenticare Nulla</h3>
+          <p>Checklist automatiche ti ricordano documenti, bagaglio e tutto ciò che serve per partire tranquillo.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOW IT WORKS ==================== -->
+  <section class="how-it-works">
+    <div class="how-it-works-container">
+      <h2 class="section-title">Come Funziona</h2>
+      
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-number">01</div>
+          <h3>Crea il Tuo Profilo</h3>
+          <p>Registrati in pochi secondi e inizia a pianificare il tuo prossimo viaggio.</p>
+        </div>
+
+        <div class="step-arrow">→</div>
+
+        <div class="step">
+          <div class="step-number">02</div>
+          <h3>Aggiungi Itinerario</h3>
+          <p>Scegli la destinazione e lasciati guidare nella creazione del tuo piano perfetto.</p>
+        </div>
+
+        <div class="step-arrow">→</div>
+
+        <div class="step">
+          <div class="step-number">03</div>
+          <h3>Organizza Dettagli</h3>
+          <p>Aggiungi attività, prenotazioni, costi e note per ogni giorno del tuo viaggio.</p>
+        </div>
+
+        <div class="step-arrow">→</div>
+
+        <div class="step">
+          <div class="step-number">04</div>
+          <h3>Condividi e Divertiti</h3>
+          <p>Invita amici, collabora in tempo reale e vivi l'avventura insieme.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ITINERARI SECTION ==================== -->
+  <section class="itinerari-section" id="itinerari">
+    <div class="itinerari-container">
+      <div class="itinerari-header">
+        <h2 class="section-title">Gli Itinerari più Popolari</h2>
+        <p class="section-subtitle">Ispirati da questi straordinari viaggi</p>
+      </div>
+
+      <div class="cards-grid">
+        
+        <div class="travel-card">
+          <div class="card-image-wrapper">
+            <img src="assets/Reggio Calabria.jpg" alt="Reggio Calabria">
+            <div class="card-tag">Italia</div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Un weekend a Reggio Calabria</h3>
+            <p class="card-description">Tra tonnellate di gelato e uno dei più belli tramonti che ho visto in vita mia, sono arrivato alla conclusione che sarei dovuto rimanere ancora un po'.</p>
+            <button class="btn-card">Guarda l'itinerario</button>
           </div>
         </div>
 
-        <!-- SEZIONE LUCIA (ISOLATA - NO CONFLITTI) -->
-<section class="travel-about-section">
+        <div class="travel-card">
+          <div class="card-image-wrapper">
+            <img src="assets/Shangai.jpg" alt="Shanghai">
+            <div class="card-tag">Cina</div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Notti a Shanghai</h3>
+            <p class="card-description">Luci ovunque, grattacieli che sembrano toccare il cielo e la sensazione costante di essere dentro un altro mondo.</p>
+            <button class="btn-card">Guarda l'itinerario</button>
+          </div>
+        </div>
 
-  <div class="travel-about-wrapper">
+        <div class="travel-card">
+          <div class="card-image-wrapper">
+            <img src="assets/sanpietroburgo.jpg" alt="San Pietroburgo">
+            <div class="card-tag">Russia</div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Inverno a San Pietroburgo</h3>
+            <p class="card-description">Palazzi enormi, neve ovunque e un silenzio poetico che sembra raccontarmi delle favole meravigliose.</p>
+            <button class="btn-card">Guarda l'itinerario</button>
+          </div>
+        </div>
 
-    <div class="travel-about-header">
-      <h2>Il Mondo di TravelBuddy</h2>
-      <p>Scopri di più sulla nostra storia e sui nostri valori</p>
+        <div class="travel-card">
+          <div class="card-image-wrapper">
+            <img src="assets/cancun-quintana-roo-maya-vacanze.jpg" alt="Cancun">
+            <div class="card-tag">Messico</div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Un tuffo a Cancún</h3>
+            <p class="card-description">Tra mare turchese e notti infinite, ho perso il senso del tempo… e forse anche un po' di me stesso.</p>
+            <button class="btn-card">Guarda l'itinerario</button>
+          </div>
+        </div>
+
+        <div class="travel-card">
+          <div class="card-image-wrapper">
+            <img src="assets/riyah.jpg" alt="Riyadh">
+            <div class="card-tag">Arabia Saudita</div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Riyadh, luce nel deserto</h3>
+            <p class="card-description">Tra modernità e sabbia, una città che meravigliosa che ti rimane addosso.</p>
+            <button class="btn-card">Guarda l'itinerario</button>
+          </div>
+        </div>
+
+        <div class="travel-card">
+          <div class="card-image-wrapper">
+            <img src="assets/Vista_de_la_Villa_Imperial_de_Potosí.jpg" alt="Potosi">
+            <div class="card-tag">Bolivia</div>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Sopra le nuvole a Potosí</h3>
+            <p class="card-description">L'aria è sottile, le strade sono ripide e ogni passo sembra più pesante del precedente, ma il mondo da quassù è un'altra cosa.</p>
+            <button class="btn-card">Guarda l'itinerario</button>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </section>
 
-    <div class="travel-about-grid">
+  <!-- ==================== TESTIMONIALS SECTION ==================== -->
+  <section class="testimonials">
+    <div class="testimonials-container">
+      <h2 class="section-title">Quello che dicono i Viaggiatori</h2>
+      
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"TravelBuddy mi ha salvato la vita. Non dimentico mai nulla e i miei amici adorano come organizzo i nostri viaggi."</p>
+          <p class="testimonial-author">— Marco, 28 anni</p>
+        </div>
 
-      <div class="travel-about-card">
-        <div class="travel-about-icon">👋</div>
-        <h3>Chi Siamo</h3>
-        <p>
-          TravelBuddy è una piattaforma nata per aiutarti a creare, organizzare e condividere i tuoi itinerari di viaggio in modo semplice e veloce.
-        </p>
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"Finalmente uno strumento che capisce veramente cosa serve a un viaggiatore. Semplice, efficace e bellissimo."</p>
+          <p class="testimonial-author">— Sofia, 32 anni</p>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"Ho usato TravelBuddy per la mia luna di miele e ha reso tutto perfetto. Lo consiglio a tutti gli sposi!"</p>
+          <p class="testimonial-author">— Luca & Giulia, Sposi</p>
+        </div>
       </div>
-
-      <div class="travel-about-card">
-        <div class="travel-about-icon">🚀</div>
-        <h3>La Nostra Mission</h3>
-        <p>
-          Il nostro obiettivo è rendere ogni viaggio un’esperienza unica, libera e personalizzata.
-        </p>
-      </div>
-
-      <div class="travel-about-card">
-        <div class="travel-about-icon">✨</div>
-        <h3>Punti di Forza</h3>
-        <p>
-          Pianifica ogni dettaglio e condividi il tuo viaggio in modo semplice e collaborativo.
-        </p>
-      </div>
-
     </div>
+  </section>
 
-  </div>
+  <!-- ==================== STATS SECTION ==================== -->
+  <section class="stats">
+    <div class="stats-container">
+      <div class="stat">
+        <div class="stat-number">50K+</div>
+        <div class="stat-label">Viaggiatori Attivi</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">150+</div>
+        <div class="stat-label">Destinazioni Coperte</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">95%</div>
+        <div class="stat-label">Soddisfazione Utenti</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">500K+</div>
+        <div class="stat-label">Itinerari Creati</div>
+      </div>
+    </div>
+  </section>
 
-</section>
+  <!-- ==================== ABOUT SECTION ==================== -->
+  <section class="about" id="about">
+    <div class="about-container">
+      <h2 class="section-title">Il Mondo di TravelBuddy</h2>
+      
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-icon">👋</div>
+          <h3>Chi Siamo</h3>
+          <p>TravelBuddy è nata dall'idea semplice ma potente: rendere la pianificazione dei viaggi un'esperienza piacevole, non stressante. Crediamo che ogni viaggio meriti di essere perfettamente organizzato.</p>
+        </div>
 
-<!-- FOOTER  -->
+        <div class="about-card">
+          <div class="about-icon">🚀</div>
+          <h3>La Nostra Mission</h3>
+          <p>Il nostro obiettivo è rendere ogni viaggio un'esperienza unica, libera e personalizzata. Vogliamo che i nostri utenti si concentrino su ciò che conta: creare memorie indimenticabili.</p>
+        </div>
 
-<footer class="footer">
-    <div class="container-footer">
-      <p>
-        © 2026 TravelBuddy - Tutti i diritti riservati |
-        <a href="note-legali.html" class="footer-link text-decoration-none mx-1">Note legali</a> |
-        <a href="termini-e-condizioni.html" class="footer-link text-decoration-none mx-1">Termini e condizioni</a>
-      </p>
+        <div class="about-card">
+          <div class="about-icon">✨</div>
+          <h3>Punti di Forza</h3>
+          <p>Pianifica ogni dettaglio, collabora con gli amici e non dimenticare mai nulla. La nostra piattaforma è semplice, intuitiva e costruita per fare proprio questo: aiutarti a vivere il viaggio, non a preoccuparti della pianificazione.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== NEWSLETTER CTA ==================== -->
+  <section class="newsletter">
+    <div class="newsletter-container">
+      <h2>Rimani Connesso con TravelBuddy</h2>
+      <p>Ricevi i migliori consigli di viaggio, offerte esclusive e ispirazioni direttamente nella tua inbox.</p>
+      
+      <form class="newsletter-form">
+        <input type="email" placeholder="Il tuo indirizzo email" required class="newsletter-input">
+        <button type="submit" class="btn-primary">Iscriviti</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>TravelBuddy</h4>
+          <p>Il tuo pianificatore di viaggi intelligente.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Link Utili</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#itinerari">Itinerari</a></li>
+            <li><a href="#about">Chi Siamo</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Legale</h4>
+          <ul>
+            <li><a href="note-legali.html">Note Legali</a></li>
+            <li><a href="termini-e-condizioni.html">Termini e Condizioni</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 TravelBuddy - Tutti i diritti riservati</p>
+      </div>
     </div>
   </footer>
-      </div>
 
-
-
-
-  
-  </body>
+  <script src="script/script.js"></script>
+</body>
 </html>
