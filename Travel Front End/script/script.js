@@ -256,7 +256,4 @@ function setupMobileMenu() {
   });
 }
 
-// ==================== INIT ====================
 
-console.log('🌍 TravelBuddy JavaScript caricato con successo!');
-console.log('✨ Animazioni e interazioni attive');
