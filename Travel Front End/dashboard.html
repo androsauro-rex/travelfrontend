@@ -1,369 +1,230 @@
 <!doctype html>
 <html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>TravelBuddy Dashboard</title>
+    <title>TravelBuddy Dashboard</title>
 
-  <link rel="stylesheet" href="style/dashboard.css">
+    <link rel="stylesheet" href="style/dashboard.css" />
 
-  <!-- Fonts TravelBuddy -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fonts TravelBuddy -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-</head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
-
-  <!-- ========================= -->
-  <!-- NAVBAR -->
-  <!-- ========================= -->
-
-  <nav class="navbar">
-
-    <div class="navbar-container">
-
-      <div class="navbar-brand">
-        Travel<span>Buddy</span>
-      </div>
-
-      <button id="logoutBtn" class="btn-secondary">
-        Logout
-      </button>
-
-    </div>
-
-  </nav>
-
-  <!-- ========================= -->
-  <!-- DASHBOARD -->
-  <!-- ========================= -->
-
-  <main class="dashboard">
-
-    <!-- CREA ITINERARIO -->
-
-    <section class="create-trip-section">
-
-      <div class="section-header">
-
-        <h1 class="page-title">
-          I tuoi viaggi
-        </h1>
-
-        <p class="page-subtitle">
-          Organizza, modifica e pubblica i tuoi itinerari.
-        </p>
-
-      </div>
-
-      <button
-        id="createTripBtn"
-        class="btn-primary create-trip-btn"
-      >
-        + Crea nuovo itinerario
-      </button>
-
-    </section>
-
+  <body>
     <!-- ========================= -->
-    <!-- BOZZE -->
+    <!-- NAVBAR -->
     <!-- ========================= -->
 
-    <section class="trips-section">
+    <nav class="navbar">
+      <div class="navbar-container">
+        <div class="navbar-brand">Travel<span>Buddy</span></div>
 
-      <h2 class="section-title">
-        📋 Bozze
-      </h2>
-
-      <div
-        id="draftTripsContainer"
-        class="trips-grid"
-      >
+        <button id="logoutBtn" class="btn-secondary">Logout</button>
       </div>
-
-    </section>
+    </nav>
 
     <!-- ========================= -->
-    <!-- PUBBLICATI -->
+    <!-- DASHBOARD -->
     <!-- ========================= -->
 
-    <section class="trips-section">
+    <main class="dashboard">
+      <!-- CREA ITINERARIO -->
 
-      <h2 class="section-title">
-        🌍 Itinerari pubblicati
-      </h2>
+      <section class="create-trip-section">
+        <div class="section-header">
+          <h1 class="page-title">I tuoi viaggi</h1>
 
-      <div
-        id="publishedTripsContainer"
-        class="trips-grid"
-      >
-      </div>
+          <p class="page-subtitle">
+            Organizza, modifica e pubblica i tuoi itinerari.
+          </p>
+        </div>
 
-    </section>
+        <button id="createTripBtn" class="btn-primary create-trip-btn">
+          + Crea nuovo itinerario
+        </button>
+      </section>
 
-  </main>
+      <!-- ========================= -->
+      <!-- BOZZE -->
+      <!-- ========================= -->
 
-  <!-- ========================= -->
-  <!-- MODALE -->
-  <!-- ========================= -->
+      <section class="trips-section">
+        <h2 class="section-title">📋 Bozze</h2>
 
-  <div
-    id="tripModal"
-    class="modal hidden"
-  >
+        <div id="draftTripsContainer" class="trips-grid"></div>
+      </section>
 
-    <div
-      id="modalContent"
-      class="modal-content"
-    >
+      <!-- ========================= -->
+      <!-- PUBBLICATI -->
+      <!-- ========================= -->
 
-      <!-- CLOSE -->
+      <section class="trips-section">
+        <h2 class="section-title">🌍 Itinerari pubblicati</h2>
 
-      <button
-        id="closeModalBtn"
-        class="modal-close"
-        type="button"
-      >
-        ✕
-      </button>
+        <div id="publishedTripsContainer" class="trips-grid"></div>
+      </section>
+    </main>
 
-      <!-- HEADER -->
+    <!-- ========================= -->
+    <!-- MODALE -->
+    <!-- ========================= -->
 
-      <div class="modal-header">
+    <div id="tripModal" class="modal hidden">
+      <div id="modalContent" class="modal-content">
+        <!-- CLOSE -->
 
-        <h2 id="modalTitle">
-          Nuovo itinerario
-        </h2>
+        <button id="closeModalBtn" class="modal-close" type="button">✕</button>
 
-        <p>
-          Compila i dettagli del tuo viaggio
-        </p>
+        <!-- HEADER -->
 
-      </div>
+        <div class="modal-header">
+          <h2 id="modalTitle">Nuovo itinerario</h2>
 
-      <!-- INFO GENERALI -->
+          <p>Compila i dettagli del tuo viaggio</p>
+        </div>
 
-      <div class="form-group">
-
-        <label for="tripTitle">
-          Titolo itinerario
-        </label>
-
-        <input
-          type="text"
-          id="tripTitle"
-          placeholder="Es. Weekend a Reggio Calabria"
-        >
-
-      </div>
-
-      <!-- DATE -->
-
-      <div class="dates-grid">
+        <!-- INFO GENERALI -->
 
         <div class="form-group">
-
-          <label for="startDate">
-            Data inizio
-          </label>
+          <label for="tripTitle"> Titolo itinerario </label>
 
           <input
-            type="date"
-            id="startDate"
-          >
+            type="text"
+            id="tripTitle"
+            placeholder="Es. Weekend a Reggio Calabria"
+          />
+        </div>
 
+        <!-- DATE -->
+
+        <div class="dates-grid">
+          <div class="form-group">
+            <label for="startDate"> Data inizio </label>
+
+            <input type="date" id="startDate" />
+          </div>
+
+          <div class="form-group">
+            <label for="endDate"> Data fine </label>
+
+            <input type="date" id="endDate" />
+          </div>
+        </div>
+
+        <!-- GENERA GIORNI -->
+
+        <button id="generateDaysBtn" class="btn-secondary" type="button">
+          Genera giorni
+        </button>
+
+        <!-- GIORNI -->
+
+        <div id="daysContainer" class="days-container"></div>
+
+        <!-- FOOTER -->
+
+        <div id="modalActions" class="modal-actions">
+          <button id="saveDraftBtn" class="btn-secondary" type="button">
+            Salva bozza
+          </button>
+
+          <button id="publishBtn" class="btn-primary" type="button">
+            Salva definitivo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- TEMPLATE CARD -->
+    <!-- ========================= -->
+
+    <template id="tripCardTemplate">
+      <div class="trip-card">
+        <div class="trip-card-header">
+          <span class="status-badge"> STATUS </span>
+        </div>
+
+        <h3 class="trip-title">Titolo itinerario</h3>
+
+        <div class="trip-actions">
+          <button class="trip-main-action btn-primary">Azione</button>
+
+          <button class="trip-delete-action btn-danger">Elimina</button>
+        </div>
+
+        <button class="trip-download btn-secondary">PDF</button>
+      </div>
+    </template>
+
+    <!-- ========================= -->
+    <!-- TEMPLATE GIORNO -->
+    <!-- ========================= -->
+
+    <template id="dayTemplate">
+      <div class="day-card">
+        <div class="day-header">
+          <h3 class="day-title">Giorno</h3>
+
+          <span class="day-date"> Data </span>
         </div>
 
         <div class="form-group">
-
-          <label for="endDate">
-            Data fine
-          </label>
+          <label> Titolo giornata </label>
 
           <input
-            type="date"
-            id="endDate"
-          >
-
+            type="text"
+            class="day-name-input"
+            placeholder="Es. Musei di Reggio Calabria"
+          />
         </div>
 
-      </div>
-
-      <!-- GENERA GIORNI -->
-
-      <button
-        id="generateDaysBtn"
-        class="btn-secondary"
-        type="button"
-      >
-        Genera giorni
-      </button>
-
-      <!-- GIORNI -->
-
-      <div
-        id="daysContainer"
-        class="days-container"
-      >
-      </div>
-
-      <!-- FOOTER -->
-
-      <div
-        id="modalActions"
-        class="modal-actions"
-      >
-
-        <button
-          id="saveDraftBtn"
-          class="btn-secondary"
-          type="button"
-        >
-          Salva bozza
+        <button class="btn-secondary add-stage-btn" type="button">
+          + Aggiungi tappa
         </button>
 
-        <button
-          id="publishBtn"
-          class="btn-primary"
-          type="button"
-        >
-          Salva definitivo
-        </button>
-
+        <div class="stages-container"></div>
       </div>
+    </template>
 
-    </div>
+    <!-- ========================= -->
+    <!-- TEMPLATE TAPPA -->
+    <!-- ========================= -->
 
-  </div>
+    <template id="stageTemplate">
+      <div class="stage-card">
+        <div class="form-group">
+          <label> Nome tappa </label>
 
-  <!-- ========================= -->
-  <!-- TEMPLATE CARD -->
-  <!-- ========================= -->
+          <input
+            type="text"
+            class="stage-name"
+            placeholder="Es. Lungomare Falcomatà"
+          />
+        </div>
 
-  <template id="tripCardTemplate">
+        <div class="form-group">
+          <label> Descrizione </label>
 
-    <div class="trip-card">
-
-      <div class="trip-card-header">
-
-        <span class="status-badge">
-          STATUS
-        </span>
-
+          <textarea
+            class="stage-description"
+            rows="4"
+            placeholder="Descrivi questa tappa..."
+          ></textarea>
+        </div>
       </div>
+    </template>
 
-      <h3 class="trip-title">
-        Titolo itinerario
-      </h3>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-      <div class="trip-actions">
-
-        <button class="trip-main-action btn-primary">
-          Azione
-        </button>
-
-        <button class="trip-delete-action btn-danger">
-          Elimina
-        </button>
-
-      </div>
-
-    </div>
-
-  </template>
-
-  <!-- ========================= -->
-  <!-- TEMPLATE GIORNO -->
-  <!-- ========================= -->
-
-  <template id="dayTemplate">
-
-    <div class="day-card">
-
-      <div class="day-header">
-
-        <h3 class="day-title">
-          Giorno
-        </h3>
-
-        <span class="day-date">
-          Data
-        </span>
-
-      </div>
-
-      <div class="form-group">
-
-        <label>
-          Titolo giornata
-        </label>
-
-        <input
-          type="text"
-          class="day-name-input"
-          placeholder="Es. Musei di Reggio Calabria"
-        >
-
-      </div>
-
-      <button
-        class="btn-secondary add-stage-btn"
-        type="button"
-      >
-        + Aggiungi tappa
-      </button>
-
-      <div class="stages-container">
-      </div>
-
-    </div>
-
-  </template>
-
-  <!-- ========================= -->
-  <!-- TEMPLATE TAPPA -->
-  <!-- ========================= -->
-
-  <template id="stageTemplate">
-
-    <div class="stage-card">
-
-      <div class="form-group">
-
-        <label>
-          Nome tappa
-        </label>
-
-        <input
-          type="text"
-          class="stage-name"
-          placeholder="Es. Lungomare Falcomatà"
-        >
-
-      </div>
-
-      <div class="form-group">
-
-        <label>
-          Descrizione
-        </label>
-
-        <textarea
-          class="stage-description"
-          rows="4"
-          placeholder="Descrivi questa tappa..."
-        ></textarea>
-
-      </div>
-
-    </div>
-
-  </template>
-
-  <script src="script/dashboard.js"></script>
-
-</body>
+    <script src="script/dashboard.js"></script>
+  </body>
 </html>

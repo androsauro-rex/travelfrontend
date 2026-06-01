@@ -24,6 +24,20 @@ const generateDaysBtn = document.getElementById("generateDaysBtn");
 let trips = JSON.parse(localStorage.getItem("trips")) || [];
 let currentTrip = null;
 
+// ================= HELPERS (FIX DATE BUG) =================
+
+function normalizeDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+function safeDate(value) {
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString("it-IT");
+}
+
 // ================= INIT =================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -38,7 +52,6 @@ createBtn.addEventListener("click", () => {
 
 closeModalBtn.addEventListener("click", closeModal);
 
-// click fuori modale
 modal.addEventListener("click", (e) => {
   if (!modalContent.contains(e.target)) {
     closeModal();
@@ -49,8 +62,8 @@ function openModal(trip) {
   currentTrip = trip;
 
   titleInput.value = trip.title || "";
-  startDateInput.value = trip.startDate || "";
-  endDateInput.value = trip.endDate || "";
+  startDateInput.value = trip.startDate ? trip.startDate.slice(0, 10) : "";
+  endDateInput.value = trip.endDate ? trip.endDate.slice(0, 10) : "";
 
   daysContainer.innerHTML = "";
 
@@ -75,11 +88,11 @@ function createEmptyTrip() {
     status: "DRAFT",
     startDate: "",
     endDate: "",
-    days: []
+    days: [],
   };
 }
 
-// ================= DAYS =================
+// ================= GENERATE DAYS =================
 
 generateDaysBtn.addEventListener("click", () => {
   if (!currentTrip) return;
@@ -96,9 +109,9 @@ generateDaysBtn.addEventListener("click", () => {
 
   while (cursor <= end) {
     const day = {
-      date: new Date(cursor),
+      date: normalizeDate(cursor), // FIX
       title: "",
-      stages: []
+      stages: [],
     };
 
     currentTrip.days.push(day);
@@ -114,7 +127,7 @@ function renderDay(day) {
   const dayEl = document.createElement("div");
   dayEl.className = "day-card";
 
-  const dateStr = new Date(day.date).toLocaleDateString("it-IT");
+  const dateStr = safeDate(day.date); // FIX
 
   dayEl.innerHTML = `
     <div class="day-header">
@@ -139,11 +152,7 @@ function renderDay(day) {
   });
 
   addStageBtn.addEventListener("click", () => {
-    const stage = {
-      name: "",
-      description: ""
-    };
-
+    const stage = { name: "", description: "" };
     day.stages.push(stage);
 
     const stageEl = document.createElement("div");
@@ -154,14 +163,11 @@ function renderDay(day) {
       <textarea placeholder="Descrizione" class="stage-desc"></textarea>
     `;
 
-    const nameInput = stageEl.querySelector(".stage-name");
-    const descInput = stageEl.querySelector(".stage-desc");
-
-    nameInput.addEventListener("input", (e) => {
+    stageEl.querySelector(".stage-name").addEventListener("input", (e) => {
       stage.name = e.target.value;
     });
 
-    descInput.addEventListener("input", (e) => {
+    stageEl.querySelector(".stage-desc").addEventListener("input", (e) => {
       stage.description = e.target.value;
     });
 
@@ -181,17 +187,14 @@ function saveTrip(status) {
   if (!titleInput.value.trim()) return;
 
   currentTrip.title = titleInput.value.trim();
-  currentTrip.startDate = startDateInput.value;
-  currentTrip.endDate = endDateInput.value;
+  currentTrip.startDate = normalizeDate(startDateInput.value); // FIX
+  currentTrip.endDate = normalizeDate(endDateInput.value); // FIX
   currentTrip.status = status;
 
-  const index = trips.findIndex(t => t.id === currentTrip.id);
+  const index = trips.findIndex((t) => t.id === currentTrip.id);
 
-  if (index >= 0) {
-    trips[index] = currentTrip;
-  } else {
-    trips.push(currentTrip);
-  }
+  if (index >= 0) trips[index] = currentTrip;
+  else trips.push(currentTrip);
 
   localStorage.setItem("trips", JSON.stringify(trips));
 
@@ -205,14 +208,16 @@ function renderTrips() {
   draftContainer.innerHTML = "";
   publishedContainer.innerHTML = "";
 
-  trips.forEach(trip => {
-    const template = document.getElementById("tripCardTemplate");
+  const template = document.getElementById("tripCardTemplate");
+
+  trips.forEach((trip) => {
     const card = template.content.cloneNode(true);
 
     const badge = card.querySelector(".status-badge");
     const title = card.querySelector(".trip-title");
     const mainBtn = card.querySelector(".trip-main-action");
     const deleteBtn = card.querySelector(".trip-delete-action");
+    const pdfBtn = card.querySelector(".trip-download");
 
     const isDraft = trip.status === "DRAFT";
 
@@ -221,24 +226,167 @@ function renderTrips() {
 
     title.textContent = trip.title || "Senza titolo";
 
-    mainBtn.textContent = isDraft ? "Continua itinerario" : "Visualizza itinerario";
+    mainBtn.textContent = isDraft
+      ? "Continua itinerario"
+      : "Visualizza itinerario";
 
     mainBtn.onclick = () => openModal(trip);
 
     deleteBtn.onclick = () => {
-      trips = trips.filter(t => t.id !== trip.id);
+      trips = trips.filter((t) => t.id !== trip.id);
       localStorage.setItem("trips", JSON.stringify(trips));
       renderTrips();
     };
 
-    if (isDraft) {
-      draftContainer.appendChild(card);
-    } else {
-      publishedContainer.appendChild(card);
-    }
+    pdfBtn.onclick = () => exportTripToPDF(trip);
+
+    if (isDraft) draftContainer.appendChild(card);
+    else publishedContainer.appendChild(card);
   });
+}
+
+// ================= PDF EXPORT =================
+
+function exportTripToPDF(trip) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const navy = "#033c4f";
+  const dark = "#062631";
+  const gray = "#666";
+  const light = "#f4f7f8";
+  const accent = "#fee440";
+
+  let y = 20;
+
+  // ================= HEADER (clean banner) =================
+  doc.setFillColor(navy);
+  doc.rect(0, 0, 210, 32, "F");
+
+  doc.setTextColor("#ffffff");
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("TravelBuddy", 14, 14);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("Itinerario di viaggio", 14, 22);
+
+  // ================= TITLE =================
+  y = 48;
+
+  doc.setTextColor(dark);
+  doc.setFontSize(24);
+  doc.setFont("helvetica", "bold");
+  doc.text(trip.title || "Senza titolo", 14, y);
+
+  y += 10;
+
+  // status pill (pulito)
+  doc.setFillColor(trip.status === "DRAFT" ? "#ffe066" : accent);
+  doc.roundedRect(14, y, 38, 9, 4, 4, "F");
+
+  doc.setTextColor(dark);
+  doc.setFontSize(9);
+  doc.text(trip.status === "DRAFT" ? "BOZZA" : "PUBBLICATO", 19, y + 6);
+
+  y += 18;
+
+  // ================= DATE =================
+//   const formatDate = (d) => {
+//     const date = new Date(d);
+//     return isNaN(date.getTime()) ? "-" : date.toLocaleDateString("it-IT");
+//   };
+
+//   doc.setTextColor(gray);
+//   doc.setFontSize(11);
+//   doc.text(
+//     `${formatDate(trip.startDate)}  →  ${formatDate(trip.endDate)}`,
+//     14,
+//     y
+//   );
+
+//   y += 18;
+
+  // ================= DAYS =================
+  trip.days.forEach((day, i) => {
+    if (y > 255) {
+      doc.addPage();
+      y = 20;
+    }
+
+    const date = new Date(day.date);
+    const dateStr = isNaN(date.getTime())
+      ? "-"
+      : date.toLocaleDateString("it-IT");
+
+    // DAY HEADER (no box pesante, solo barra laterale)
+    doc.setFillColor(navy);
+    doc.rect(10, y - 4, 2, 10, "F");
+
+    doc.setTextColor(navy);
+    doc.setFontSize(13);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Giorno ${i + 1}`, 16, y);
+
+    doc.setTextColor(gray);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(dateStr, 45, y);
+
+    y += 10;
+
+    // DAY TITLE
+    if (day.title) {
+      doc.setTextColor(dark);
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.text(day.title, 16, y);
+      y += 8;
+    }
+
+    // STAGES (clean list style)
+    if (day.stages?.length) {
+      day.stages.forEach((stage) => {
+        doc.setTextColor(dark);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+
+        doc.text(`• ${stage.name || "Tappa"}`, 18, y);
+        y += 6;
+
+        if (stage.description) {
+          doc.setTextColor(gray);
+          doc.setFont("helvetica", "normal");
+
+          const lines = doc.splitTextToSize(stage.description, 160);
+          doc.text(lines, 22, y);
+          y += lines.length * 5;
+        }
+      });
+    }
+
+    y += 10;
+
+    // subtle divider (NOT aggressive line)
+    doc.setDrawColor("#eaeaea");
+    doc.line(14, y, 196, y);
+
+    y += 12;
+  });
+
+  // ================= FOOTER =================
+  doc.setFontSize(9);
+  doc.setTextColor("#999");
+  doc.text(
+    "TravelBuddy • Your travel planner",
+    14,
+    287
+  );
+
+  doc.save(`${trip.title || "itinerario"}.pdf`);
 }
 
 // ================= LOG =================
 
-console.log("TravelBuddy Dashboard FIXED 🚀");
+console.log("TravelBuddy FIX DEFINITIVE 🚀");
