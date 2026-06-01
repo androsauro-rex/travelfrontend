@@ -1,168 +1,168 @@
 :root {
-  --azzuro:  #00bbf9;
-  --banana: #fee440;
-   --travel-dark: #121212;
-  --travel-navy: #033c4f;
-  --travel-deep: #062631;
+  --primary: #1a4d5c;
+  --accent: #ff6b35;
+  --highlight: #ffd60a;
+  --dark: #000000;
+  --light: #f8f8f8;
   --white: #ffffff;
-  --indie: "Indie Flower";
+  --gray: #6b7280;
+
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
 }
 
-/***************************************RESET CSS ***********************/
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
+/* ================= RESET ================= */
 * {
   margin: 0;
   padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-ul,
-ol {
-  list-style: none;
+  box-sizing: border-box;
 }
 
 body {
+  font-family: var(--font-body);
+  background: var(--light);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  margin: 0;
-  background: #121212;
-  font-family: "Indie Flower";
-  font-weight: 400;
-  font-style: normal;
-  color: var(--travel-deep);
 }
 
-/* .slackey-regular {
-  font-family: "Slackey", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-} */
+/* ================= PAGE ================= */
 
-
-/* .indie-flower-regular {
-  font-family: "Indie Flower", cursive;
-  font-weight: 400;
-  font-style: normal;
-} */
-
-
-/* .unkempt-regular {
-  font-family: "Unkempt", cursive;
-  font-weight: 400;
-  font-style: normal;
+.login-page {
+  width: 100%;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
-.unkempt-bold {
-  font-family: "Unkempt", cursive;
-  font-weight: 700;
-  font-style: normal;
-} */
+/* ================= CARD ================= */
 
-/* From Uiverse.io by ayyjayy2 */ 
-.form {
-  --font-color: #323232;
-  --font-color-sub: #666;
-  --bg-color: beige;
-  --main-color: black;
-  background-color: var(--azzuro);
-  padding: 80px 20px;
-  background: lightblue;
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border: 3px solid var(--dark);
+  box-shadow: 8px 8px 0 var(--dark);
+  padding: 2.5rem;
+}
+
+/* ================= HEADER ================= */
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h1 {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.login-header h1 span {
+  color: var(--accent);
+}
+
+.login-header p {
+  color: var(--gray);
+  margin-top: 0.5rem;
+}
+
+/* ================= FORM ================= */
+
+.login-form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 20px;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  box-shadow: 2px 9px 8px var(--white);
+  gap: 1.2rem;
 }
 
-.title {
-    text-align: center;
-  color: var(--travel-dark);
-  font-family: "Slackey", sans-serif;
-  font-weight: 900;
-  font-size: 1.6rem;
-  margin-bottom: 16px;
-  gap: 20px;
-}
-
-.title span {
-  color: var(--travel-navy);
-  font-weight: 600;
-  font-size: 1.4rem;
-  font-family: "Indie Flower";
-}
-
-.input {
-  width: 100%;
-  height: 40px;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  background-color: var(--banana);
-  box-shadow: 4px 4px var(--main-color);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--font-color);
-  padding: 5px 10px;
-  outline: none;
-}
-
-.input::placeholder {
-  color: var(--font-color-sub);
-  opacity: 0.8;
-}
-
-.input:focus {
-  border: 2px solid red;
-}
-
-.login-with {
+.login-form label {
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--dark);
+  gap: 0.4rem;
 }
 
+.login-form input {
+  padding: 0.8rem 1rem;
+  border: 3px solid var(--dark);
+  background: var(--light);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  box-shadow: 4px 4px 0 var(--dark);
+  outline: none;
+  transition: all 0.2s ease;
+}
 
-/* .icon {
-  width: 24px;
-  height: 24px;
-  fill: var(--main-color);
-} */
+.login-form input:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--dark);
+  border-color: var(--accent);
+}
 
+/* ================= BUTTON ================= */
 
-.button-confirm {
-  margin: 50px auto 0 auto;
-  width: 120px;
-  height: 40px;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  background-color: var(--banana);
-  box-shadow: 4px 4px var(--main-color);
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--font-color);
+.btn-primary {
+  margin-top: 1rem;
+  background: var(--accent);
+  color: var(--white);
+  border: 3px solid var(--dark);
+  padding: 0.9rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
   cursor: pointer;
-
-   transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 4px 4px 0 var(--dark);
+  transition: all 0.15s ease;
 }
 
-.button-confirm:disabled{
-    background-color: var(--font-color-sub);
-    cursor:not-allowed;
+.btn-primary:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--dark);
 }
 
-.button-confirm:not(:disabled):active {
+.btn-primary:active {
   transform: translate(4px, 4px);
-  box-shadow: 0px 0px var(--main-color);
+  box-shadow: 0 0 0 var(--dark);
+}
+
+.btn-primary:disabled {
+  background: var(--gray);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ================= FOOTER ================= */
+
+.login-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--gray);
+}
+
+.login-footer a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.8rem;
+  }
 }
