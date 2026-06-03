@@ -16,41 +16,32 @@ function checkInputs() {
 
 form.addEventListener("input", checkInputs);
 
-// ================= SUBMIT =================
+// ================= LOGIN STATICO =================
 
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const userData = {
-    email: email.value,
-    password: pass.value,
-  };
+  button.disabled = true;
 
-  try {
-    const response = await fetch("http://localhost:8080/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
+  const emailValue = email.value.trim();
+  const passValue = pass.value.trim();
 
-    if (!response.ok) {
-      showToast("Login fallito ❌");
-      return;
-    }
-
-    const data = await response.json();
-    console.log(data);
-
-    showToast("Login riuscito 🎉");
-
-  } catch (err) {
-    showToast("Errore di connessione ⚠️");
+  // simulazione login
+  if (!emailRegex.test(emailValue) || passValue.length < 6) {
+    showToast("Credenziali non valide ❌");
+    button.disabled = false;
+    return;
   }
+
+  showToast("Login effettuato 🎉");
+
+  // simula tempo di login
+  setTimeout(() => {
+    window.location.href = "dashboard.html";
+  }, 800);
 });
 
-// ================= TOAST SYSTEM (stile TravelBuddy) =================
+// ================= TOAST =================
 
 function showToast(message) {
   const toast = document.createElement("div");
@@ -79,7 +70,8 @@ function showToast(message) {
   }, 2500);
 }
 
-// animazioni toast
+// ================= ANIMAZIONI =================
+
 const style = document.createElement("style");
 style.textContent = `
 @keyframes slideIn {
