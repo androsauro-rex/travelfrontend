@@ -19,30 +19,36 @@ const saveDraftBtn = document.getElementById("saveDraftBtn");
 const publishBtn = document.getElementById("publishBtn");
 const generateDaysBtn = document.getElementById("generateDaysBtn");
 
+// 🔥 VISIBILITY
+const visibilityToggle = document.getElementById("visibilityToggle");
+const visibilityLabel = document.getElementById("visibilityLabel");
+
 // ================= STATE =================
 
 let trips = JSON.parse(localStorage.getItem("trips")) || [];
 let currentTrip = null;
 
-// ================= HELPERS (FIX DATE BUG) =================
+// ================= TOGGLE VISIBILITY =================
 
-function normalizeDate(value) {
-  if (!value) return null;
-  const d = new Date(value);
-  return isNaN(d.getTime()) ? null : d.toISOString();
+function updateVisibilityUI() {
+  if (!currentTrip) return;
+
+  const isPublic = currentTrip.visibility === "PUBLIC";
+
+  visibilityToggle.checked = isPublic;
+  visibilityLabel.textContent = isPublic ? "Pubblico" : "Privato";
 }
 
-function safeDate(value) {
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString("it-IT");
-}
+visibilityToggle.addEventListener("change", () => {
+  if (!currentTrip) return;
+
+  currentTrip.visibility = visibilityToggle.checked ? "PUBLIC" : "PRIVATE";
+  updateVisibilityUI();
+});
 
 // ================= INIT =================
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderTrips();
-});
+document.addEventListener("DOMContentLoaded", renderTrips);
 
 // ================= MODAL =================
 
@@ -53,23 +59,24 @@ createBtn.addEventListener("click", () => {
 closeModalBtn.addEventListener("click", closeModal);
 
 modal.addEventListener("click", (e) => {
-  if (!modalContent.contains(e.target)) {
-    closeModal();
-  }
+  if (!modalContent.contains(e.target)) closeModal();
 });
 
 function openModal(trip) {
   currentTrip = trip;
 
   titleInput.value = trip.title || "";
-  startDateInput.value = trip.startDate ? trip.startDate.slice(0, 10) : "";
-  endDateInput.value = trip.endDate ? trip.endDate.slice(0, 10) : "";
+  startDateInput.value = trip.startDate || "";
+  endDateInput.value = trip.endDate || "";
+
+  if (!trip.visibility) trip.visibility = "PRIVATE";
 
   daysContainer.innerHTML = "";
 
-  if (trip.days?.length) {
-    trip.days.forEach(renderDay);
-  }
+  updateVisibilityUI();
+
+  // Il check previene errori se days è undefined
+  trip.days?.forEach((day, index) => renderDay(day, index));
 
   modal.classList.remove("hidden");
 }
@@ -86,95 +93,11 @@ function createEmptyTrip() {
     id: Date.now(),
     title: "",
     status: "DRAFT",
+    visibility: "PRIVATE",
     startDate: "",
     endDate: "",
-    days: [],
+    days: []
   };
-}
-
-// ================= GENERATE DAYS =================
-
-generateDaysBtn.addEventListener("click", () => {
-  if (!currentTrip) return;
-
-  const start = new Date(startDateInput.value);
-  const end = new Date(endDateInput.value);
-
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end < start) return;
-
-  currentTrip.days = [];
-  daysContainer.innerHTML = "";
-
-  let cursor = new Date(start);
-
-  while (cursor <= end) {
-    const day = {
-      date: normalizeDate(cursor), // FIX
-      title: "",
-      stages: [],
-    };
-
-    currentTrip.days.push(day);
-    renderDay(day);
-
-    cursor.setDate(cursor.getDate() + 1);
-  }
-});
-
-// ================= RENDER DAY =================
-
-function renderDay(day) {
-  const dayEl = document.createElement("div");
-  dayEl.className = "day-card";
-
-  const dateStr = safeDate(day.date); // FIX
-
-  dayEl.innerHTML = `
-    <div class="day-header">
-      <span><strong>Giorno</strong> - ${dateStr}</span>
-    </div>
-
-    <input class="day-title-input" placeholder="Titolo giornata" value="${day.title || ""}" />
-
-    <div class="stages-container"></div>
-
-    <button class="btn-secondary add-stage-btn">
-      + Aggiungi tappa
-    </button>
-  `;
-
-  const stagesContainer = dayEl.querySelector(".stages-container");
-  const addStageBtn = dayEl.querySelector(".add-stage-btn");
-  const titleInputEl = dayEl.querySelector(".day-title-input");
-
-  titleInputEl.addEventListener("input", (e) => {
-    day.title = e.target.value;
-  });
-
-  addStageBtn.addEventListener("click", () => {
-    const stage = { name: "", description: "" };
-    day.stages.push(stage);
-
-    const stageEl = document.createElement("div");
-    stageEl.className = "stage-card";
-
-    stageEl.innerHTML = `
-      <input placeholder="Nome tappa" class="stage-name"/>
-      <textarea placeholder="Descrizione" class="stage-desc"></textarea>
-    `;
-
-    stageEl.querySelector(".stage-name").addEventListener("input", (e) => {
-      stage.name = e.target.value;
-    });
-
-    stageEl.querySelector(".stage-desc").addEventListener("input", (e) => {
-      stage.description = e.target.value;
-    });
-
-    stagesContainer.appendChild(stageEl);
-  });
-
-  daysContainer.appendChild(dayEl);
 }
 
 // ================= SAVE =================
@@ -184,14 +107,13 @@ publishBtn.addEventListener("click", () => saveTrip("PUBLISHED"));
 
 function saveTrip(status) {
   if (!currentTrip) return;
-  if (!titleInput.value.trim()) return;
 
   currentTrip.title = titleInput.value.trim();
-  currentTrip.startDate = normalizeDate(startDateInput.value); // FIX
-  currentTrip.endDate = normalizeDate(endDateInput.value); // FIX
+  currentTrip.startDate = startDateInput.value;
+  currentTrip.endDate = endDateInput.value;
   currentTrip.status = status;
 
-  const index = trips.findIndex((t) => t.id === currentTrip.id);
+  const index = trips.findIndex(t => t.id === currentTrip.id);
 
   if (index >= 0) trips[index] = currentTrip;
   else trips.push(currentTrip);
@@ -202,191 +124,153 @@ function saveTrip(status) {
   closeModal();
 }
 
-// ================= RENDER TRIPS =================
+// ================= DAYS =================
+
+generateDaysBtn.addEventListener("click", () => {
+  if (!currentTrip) return;
+
+  const start = new Date(startDateInput.value);
+  const end = new Date(endDateInput.value);
+
+  if (isNaN(start) || isNaN(end) || end < start) {
+    alert("Inserisci un intervallo di date valido.");
+    return;
+  }
+
+  currentTrip.days = [];
+  daysContainer.innerHTML = "";
+
+  let cursor = new Date(start);
+
+  while (cursor <= end) {
+    currentTrip.days.push({
+      date: cursor.toISOString().split('T')[0], // salva in formato YYYY-MM-DD
+      title: "",
+      stages: []
+    });
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  currentTrip.days.forEach((day, index) => renderDay(day, index));
+});
+
+// FUNZIONE AGGIUNTA: Renderizza i singoli giorni all'interno del modale
+function renderDay(day, index) {
+  const dayCard = document.createElement("div");
+  dayCard.className = "day-card";
+
+  // Formatta la data per renderla leggibile (DD/MM/YYYY)
+  let formattedDate = "";
+  if (day.date) {
+    const d = new Date(day.date);
+    formattedDate = !isNaN(d) ? ` - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}` : "";
+  }
+
+  dayCard.innerHTML = `
+    <div class="day-header">
+      <span>Giorno ${index + 1}${formattedDate}</span>
+    </div>
+    <div class="form-group">
+      <input type="text" class="day-title-input" placeholder="Cosa farai in questo giorno? (es. Visita al museo, Relax in spiaggia...)" value="${day.title || ''}">
+    </div>
+  `;
+
+  // Ascolta i cambiamenti sul titolo del giorno e aggiorna lo stato in tempo reale
+  const input = dayCard.querySelector(".day-title-input");
+  input.addEventListener("input", (e) => {
+    if (currentTrip && currentTrip.days[index]) {
+      currentTrip.days[index].title = e.target.value;
+    }
+  });
+
+  daysContainer.appendChild(dayCard);
+}
+
+// ================= RENDER =================
 
 function renderTrips() {
   draftContainer.innerHTML = "";
   publishedContainer.innerHTML = "";
 
-  const template = document.getElementById("tripCardTemplate");
+  trips.forEach(trip => {
+    const card = document.createElement("div");
+    card.className = "trip-card";
 
-  trips.forEach((trip) => {
-    const card = template.content.cloneNode(true);
+    // Gestione dinamica dei badge neo-brutalisti in base allo stato
+    const badgeClass = trip.status === "DRAFT" ? "badge-draft" : "badge-published";
+    const badgeText = trip.status === "DRAFT" ? "Bozza" : "Pubblicato";
 
-    const badge = card.querySelector(".status-badge");
-    const title = card.querySelector(".trip-title");
-    const mainBtn = card.querySelector(".trip-main-action");
-    const deleteBtn = card.querySelector(".trip-delete-action");
-    const pdfBtn = card.querySelector(".trip-download");
+    card.innerHTML = `
+      <span class="status-badge ${badgeClass}">${badgeText}</span>
+      <h3 class="trip-title">${trip.title || "Senza titolo"}</h3>
+      <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 0.5rem;">
+        ${trip.startDate ? trip.startDate.split('-').reverse().join('/') : '---'} ➔ ${trip.endDate ? trip.endDate.split('-').reverse().join('/') : '---'}
+      </p>
 
-    const isDraft = trip.status === "DRAFT";
+      <div class="trip-actions">
+        <button class="btn-primary open-btn">Apri</button>
+        <button class="btn-danger del-btn">Elimina</button>
+        <button class="btn-secondary pdf-btn">PDF</button>
+      </div>
+    `;
 
-    badge.textContent = isDraft ? "BOZZA" : "PUBBLICATO";
-    badge.classList.add(isDraft ? "badge-draft" : "badge-published");
+    const openBtn = card.querySelector(".open-btn");
+    const delBtn = card.querySelector(".del-btn");
+    const pdfBtn = card.querySelector(".pdf-btn");
 
-    title.textContent = trip.title || "Senza titolo";
+    openBtn.onclick = () => openModal(trip);
 
-    mainBtn.textContent = isDraft
-      ? "Continua itinerario"
-      : "Visualizza itinerario";
-
-    mainBtn.onclick = () => openModal(trip);
-
-    deleteBtn.onclick = () => {
-      trips = trips.filter((t) => t.id !== trip.id);
+    delBtn.onclick = () => {
+      trips = trips.filter(t => t.id !== trip.id);
       localStorage.setItem("trips", JSON.stringify(trips));
       renderTrips();
     };
 
     pdfBtn.onclick = () => exportTripToPDF(trip);
 
-    if (isDraft) draftContainer.appendChild(card);
+    if (trip.status === "DRAFT") draftContainer.appendChild(card);
     else publishedContainer.appendChild(card);
   });
 }
 
-// ================= PDF EXPORT =================
+// ================= PDF =================
 
 function exportTripToPDF(trip) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  const navy = "#033c4f";
-  const dark = "#062631";
-  const gray = "#666";
-  const light = "#f4f7f8";
-  const accent = "#fee440";
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text(trip.title || "Itinerario Senza Titolo", 10, 20);
 
-  let y = 20;
+  doc.setFontSize(12);
+  doc.setFont("Helvetica", "normal");
+  doc.text("Stato: " + (trip.status === "DRAFT" ? "Bozza" : "Pubblicato"), 10, 32);
+  doc.text("Visibilita': " + (trip.visibility === "PUBLIC" ? "Pubblico" : "Privato"), 10, 40);
+  doc.text(`Periodo: ${trip.startDate || '---'} a ${trip.endDate || '---'}`, 10, 48);
+  
+  doc.line(10, 55, 200, 55);
 
-  // ================= HEADER (clean banner) =================
-  doc.setFillColor(navy);
-  doc.rect(0, 0, 210, 32, "F");
+  let yOffset = 65;
+  if (trip.days && trip.days.length > 0) {
+    doc.setFont("Helvetica", "bold");
+    doc.text("Programma Giornaliero:", 10, yOffset);
+    yOffset += 10;
+    
+    doc.setFont("Helvetica", "normal");
+    trip.days.forEach((day, idx) => {
+      if (yOffset > 270) { // Nuova pagina se lo spazio finisce
+        doc.addPage();
+        yOffset = 20;
+      }
+      const dayLine = `Giorno ${idx + 1} (${day.date || ''}): ${day.title || 'Nessuna attività programmata'}`;
+      doc.text(dayLine, 15, yOffset);
+      yOffset += 8;
+    });
+  } else {
+    doc.text("Nessun giorno generato nell'itinerario.", 10, yOffset);
+  }
 
-  doc.setTextColor("#ffffff");
-  doc.setFontSize(18);
-  doc.setFont("helvetica", "bold");
-  doc.text("TravelBuddy", 14, 14);
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text("Itinerario di viaggio", 14, 22);
-
-  // ================= TITLE =================
-  y = 48;
-
-  doc.setTextColor(dark);
-  doc.setFontSize(24);
-  doc.setFont("helvetica", "bold");
-  doc.text(trip.title || "Senza titolo", 14, y);
-
-  y += 10;
-
-  // status pill (pulito)
-  doc.setFillColor(trip.status === "DRAFT" ? "#ffe066" : accent);
-  doc.roundedRect(14, y, 38, 9, 4, 4, "F");
-
-  doc.setTextColor(dark);
-  doc.setFontSize(9);
-  doc.text(trip.status === "DRAFT" ? "BOZZA" : "PUBBLICATO", 19, y + 6);
-
-  y += 18;
-
-  // ================= DATE =================
-//   const formatDate = (d) => {
-//     const date = new Date(d);
-//     return isNaN(date.getTime()) ? "-" : date.toLocaleDateString("it-IT");
-//   };
-
-//   doc.setTextColor(gray);
-//   doc.setFontSize(11);
-//   doc.text(
-//     `${formatDate(trip.startDate)}  →  ${formatDate(trip.endDate)}`,
-//     14,
-//     y
-//   );
-
-//   y += 18;
-
-  // ================= DAYS =================
-  trip.days.forEach((day, i) => {
-    if (y > 255) {
-      doc.addPage();
-      y = 20;
-    }
-
-    const date = new Date(day.date);
-    const dateStr = isNaN(date.getTime())
-      ? "-"
-      : date.toLocaleDateString("it-IT");
-
-    // DAY HEADER (no box pesante, solo barra laterale)
-    doc.setFillColor(navy);
-    doc.rect(10, y - 4, 2, 10, "F");
-
-    doc.setTextColor(navy);
-    doc.setFontSize(13);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Giorno ${i + 1}`, 16, y);
-
-    doc.setTextColor(gray);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(dateStr, 45, y);
-
-    y += 10;
-
-    // DAY TITLE
-    if (day.title) {
-      doc.setTextColor(dark);
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "bold");
-      doc.text(day.title, 16, y);
-      y += 8;
-    }
-
-    // STAGES (clean list style)
-    if (day.stages?.length) {
-      day.stages.forEach((stage) => {
-        doc.setTextColor(dark);
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-
-        doc.text(`• ${stage.name || "Tappa"}`, 18, y);
-        y += 6;
-
-        if (stage.description) {
-          doc.setTextColor(gray);
-          doc.setFont("helvetica", "normal");
-
-          const lines = doc.splitTextToSize(stage.description, 160);
-          doc.text(lines, 22, y);
-          y += lines.length * 5;
-        }
-      });
-    }
-
-    y += 10;
-
-    // subtle divider (NOT aggressive line)
-    doc.setDrawColor("#eaeaea");
-    doc.line(14, y, 196, y);
-
-    y += 12;
-  });
-
-  // ================= FOOTER =================
-  doc.setFontSize(9);
-  doc.setTextColor("#999");
-  doc.text(
-    "TravelBuddy • Your travel planner",
-    14,
-    287
-  );
-
-  doc.save(`${trip.title || "itinerario"}.pdf`);
+  doc.save(`${trip.title ? trip.title.replace(/\s+/g, '_') : 'itinerario'}.pdf`);
 }
-
-// ================= LOG =================
-
-console.log("TravelBuddy FIX DEFINITIVE 🚀");
