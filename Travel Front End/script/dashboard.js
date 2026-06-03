@@ -1,20 +1,29 @@
 // ================= DOM =================
 
+// NAVBAR
+const logoutBtn = document.querySelector('.navbar-container .btn-secondary');
+
+// CONTAINERS
 const draftContainer = document.getElementById("draftTripsContainer");
 const publishedContainer = document.getElementById("publishedTripsContainer");
 
+// MODAL
 const modal = document.getElementById("tripModal");
 const modalContent = document.getElementById("modalContent");
 
+// BUTTONS
 const createBtn = document.getElementById("createTripBtn");
 const closeModalBtn = document.getElementById("closeModalBtn");
 
+// FORM INPUTS
 const titleInput = document.getElementById("tripTitle");
 const startDateInput = document.getElementById("startDate");
 const endDateInput = document.getElementById("endDate");
 
+// DAYS
 const daysContainer = document.getElementById("daysContainer");
 
+// ACTIONS
 const saveDraftBtn = document.getElementById("saveDraftBtn");
 const publishBtn = document.getElementById("publishBtn");
 const generateDaysBtn = document.getElementById("generateDaysBtn");
@@ -49,6 +58,49 @@ visibilityToggle.addEventListener("change", () => {
 // ================= INIT =================
 
 document.addEventListener("DOMContentLoaded", renderTrips);
+
+// ================= LOGOUT =================
+
+logoutBtn.addEventListener("click", () => {
+  // Rimuovi token e dati utente dal localStorage
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("currentUser");
+  
+  // Mostra messaggio
+  showLogoutNotification();
+  
+  // Redirect alla pagina index dopo 1 secondo
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 1000);
+});
+
+function showLogoutNotification() {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background-color: #4caf50;
+    color: white;
+    padding: 1rem 1.5rem;
+    border: 3px solid #000;
+    border-radius: 0;
+    box-shadow: 4px 4px 0 #000;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+  `;
+  
+  notification.textContent = '👋 A presto! Logout effettuato';
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease forwards';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
 
 // ================= MODAL =================
 
