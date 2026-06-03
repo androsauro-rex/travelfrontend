@@ -155,6 +155,66 @@ generateDaysBtn.addEventListener("click", () => {
   currentTrip.days.forEach((day, index) => renderDay(day, index));
 });
 
+// ================= STAGES MANAGEMENT =================
+
+function addStage(dayIndex) {
+  if (!currentTrip || !currentTrip.days[dayIndex]) return;
+
+  const stageTitleInput = document.getElementById(`stage-title-${dayIndex}`);
+  const stageDescInput = document.getElementById(`stage-desc-${dayIndex}`);
+  
+  const stageTitle = stageTitleInput.value.trim();
+  const stageDesc = stageDescInput.value.trim();
+
+  if (!stageTitle) {
+    alert("Inserisci un titolo per la tappa");
+    return;
+  }
+
+  currentTrip.days[dayIndex].stages.push({
+    id: Date.now(),
+    title: stageTitle,
+    description: stageDesc
+  });
+
+  stageTitleInput.value = "";
+  stageDescInput.value = "";
+  renderStages(dayIndex);
+}
+
+function deleteStage(dayIndex, stageId) {
+  if (!currentTrip || !currentTrip.days[dayIndex]) return;
+
+  currentTrip.days[dayIndex].stages = currentTrip.days[dayIndex].stages.filter(s => s.id !== stageId);
+  renderStages(dayIndex);
+}
+
+function renderStages(dayIndex) {
+  if (!currentTrip || !currentTrip.days[dayIndex]) return;
+
+  const stagesContainer = document.getElementById(`stages-container-${dayIndex}`);
+  if (!stagesContainer) return;
+
+  stagesContainer.innerHTML = "";
+
+  const day = currentTrip.days[dayIndex];
+
+  if (day.stages && day.stages.length > 0) {
+    day.stages.forEach(stage => {
+      const stageItem = document.createElement("div");
+      stageItem.className = "stage-item";
+      stageItem.innerHTML = `
+        <div class="stage-text">
+          <div class="stage-title">📍 ${stage.title}</div>
+          ${stage.description ? `<div class="stage-description">${stage.description}</div>` : ''}
+        </div>
+        <button type="button" class="btn-small" onclick="deleteStage(${dayIndex}, ${stage.id})">Elimina</button>
+      `;
+      stagesContainer.appendChild(stageItem);
+    });
+  }
+}
+
 // FUNZIONE AGGIUNTA: Renderizza i singoli giorni all'interno del modale
 function renderDay(day, index) {
   const dayCard = document.createElement("div");
@@ -174,6 +234,17 @@ function renderDay(day, index) {
     <div class="form-group">
       <input type="text" class="day-title-input" placeholder="Cosa farai in questo giorno? (es. Visita al museo, Relax in spiaggia...)" value="${day.title || ''}">
     </div>
+    <div class="form-group">
+      <label style="font-weight: 700; margin-top: 0.8rem;">Tappe della giornata</label>
+      <div id="stages-container-${index}" class="stages-container"></div>
+      
+      <div class="new-stage-box">
+        <p class="new-stage-title">➕ Aggiungi una nuova tappa</p>
+        <input type="text" id="stage-title-${index}" class="stage-input" placeholder="Titolo tappa (es. Colazione, Museo, Cena...)" style="margin-bottom: 0.8rem;">
+        <textarea id="stage-desc-${index}" class="stage-input" placeholder="Descrizione (opzionale - es. Visita la sezione di arte medievale)" rows="2" style="margin-bottom: 0.8rem;"></textarea>
+        <button type="button" class="btn-add-stage" onclick="addStage(${index})">+ Aggiungi tappa</button>
+      </div>
+    </div>
   `;
 
   // Ascolta i cambiamenti sul titolo del giorno e aggiorna lo stato in tempo reale
@@ -184,7 +255,19 @@ function renderDay(day, index) {
     }
   });
 
+  // Permetti di aggiungere una tappa premendo Ctrl+Enter sulla descrizione
+  const stageDescInput = dayCard.querySelector(`#stage-desc-${index}`);
+  stageDescInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter" && e.ctrlKey) {
+      e.preventDefault();
+      addStage(index);
+    }
+  });
+
   daysContainer.appendChild(dayCard);
+
+  // Renderizza le tappe già esistenti
+  renderStages(index);
 }
 
 // ================= RENDER =================
@@ -267,6 +350,41 @@ function exportTripToPDF(trip) {
       const dayLine = `Giorno ${idx + 1} (${day.date || ''}): ${day.title || 'Nessuna attività programmata'}`;
       doc.text(dayLine, 15, yOffset);
       yOffset += 8;
+
+      // Aggiungi le tappe nel PDF
+      if (day.stages && day.stages.length > 0) {
+        day.stages.forEach(stage => {
+          if (yOffset > 270) {
+            doc.addPage();
+            yOffset = 20;
+          }
+          doc.setFont("Helvetica", "bold");
+          doc.setFontSize(10);
+          doc.text(`  • ${stage.title}`, 20, yOffset);
+          yOffset += 6;
+
+          // Aggiungi descrizione se presente
+          if (stage.description) {
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(9);
+            const descLines = doc.splitTextToSize(stage.description, 170);
+            descLines.forEach(line => {
+              if (yOffset > 270) {
+                doc.addPage();
+                yOffset = 20;
+              }
+              doc.text(line, 25, yOffset);
+              yOffset += 5;
+            });
+          }
+
+          yOffset += 2;
+        });
+        doc.setFontSize(12);
+        doc.setFont("Helvetica", "normal");
+      }
+
+      yOffset += 2;
     });
   } else {
     doc.text("Nessun giorno generato nell'itinerario.", 10, yOffset);
