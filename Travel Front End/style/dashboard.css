@@ -122,6 +122,7 @@ body {
   font-weight: 800;
   cursor: pointer;
   color: white;
+  transition: all .15s ease;
 }
 
 .btn-danger:hover {
@@ -152,6 +153,7 @@ body {
 .trip-title {
   font-family: var(--font-display);
   font-size: 1.2rem;
+  font-weight: 800;
 }
 
 .trip-actions {
@@ -163,6 +165,7 @@ body {
 /* ================= STATUS BADGE ================= */
 
 .status-badge {
+  align-self: flex-start;
   display: inline-block;
   padding: 0.3rem 0.6rem;
   border: 2px solid var(--dark);
@@ -172,6 +175,7 @@ body {
 
 .badge-draft {
   background: var(--highlight);
+  color: var(--dark);
 }
 
 .badge-published {
@@ -189,6 +193,7 @@ body {
   justify-content: center;
   align-items: center;
   padding: 2rem;
+  z-index: 2000;
 }
 
 .modal.hidden {
@@ -236,11 +241,16 @@ body {
   margin-top: 1rem;
 }
 
+.form-group label {
+  font-weight: 700;
+}
+
 input, textarea {
   border: 3px solid var(--dark);
   padding: 0.8rem;
   box-shadow: 4px 4px 0 var(--dark);
   font-family: var(--font-body);
+  outline: none;
 }
 
 /* ================= DATES ================= */
@@ -271,22 +281,8 @@ input, textarea {
   display: flex;
   justify-content: space-between;
   font-weight: 800;
-}
-
-.add-stage-btn {
-  margin-top: 1rem;
-}
-
-/* ================= STAGES ================= */
-
-.stage-card {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 2px solid var(--dark);
-  background: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  font-family: var(--font-display);
+  margin-bottom: 0.5rem;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -299,4 +295,60 @@ input, textarea {
   .trip-actions {
     flex-direction: column;
   }
+}
+
+/* ================= TOGGLE ================= */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.toggle-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.toggle-wrapper input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--dark);
+  border: 2px solid var(--dark);
+  box-shadow: 3px 3px 0 var(--dark);
+  transition: 0.2s;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 3px;
+  transform: translateY(-50%);
+  background: white;
+  transition: 0.2s;
+}
+
+.toggle-wrapper input:checked + .toggle-slider {
+  background: var(--accent);
+}
+
+.toggle-wrapper input:checked + .toggle-slider::before {
+  transform: translate(20px, -50%);
+}
+
+.toggle-label {
+  font-weight: 800;
+  font-family: var(--font-display);
 }
