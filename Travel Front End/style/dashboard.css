@@ -253,6 +253,12 @@ input, textarea {
   outline: none;
 }
 
+textarea {
+  resize: none;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
 /* ================= DATES ================= */
 
 .dates-grid {
@@ -285,6 +291,102 @@ input, textarea {
   margin-bottom: 0.5rem;
 }
 
+/* ================= STAGES ================= */
+
+.stages-container {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.stage-item {
+  background: var(--white);
+  border: 2px solid var(--dark);
+  padding: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 2px 2px 0 var(--dark);
+}
+
+.stage-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.stage-title {
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.3rem;
+}
+
+.stage-description {
+  font-size: 0.9rem;
+  color: var(--gray);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.new-stage-box {
+  margin-top: 1rem;
+  border: 2px solid #ddd;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+.new-stage-title {
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+.btn-small {
+  background: #ff4d4d;
+  border: 2px solid var(--dark);
+  padding: 0.4rem 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: white;
+  transition: all .15s ease;
+  box-shadow: 2px 2px 0 var(--dark);
+}
+
+.btn-small:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--dark);
+}
+
+.btn-add-stage {
+  background: var(--highlight);
+  border: 2px solid var(--dark);
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--dark);
+  transition: all .15s ease;
+  box-shadow: 3px 3px 0 var(--dark);
+  font-family: var(--font-body);
+  margin-top: 0.8rem;
+  width: 100%;
+}
+
+.btn-add-stage:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--dark);
+}
+
+.stage-input {
+  border: 2px solid var(--dark);
+  padding: 0.6rem;
+  box-shadow: 2px 2px 0 var(--dark);
+  font-family: var(--font-body);
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 768px) {
@@ -294,6 +396,16 @@ input, textarea {
 
   .trip-actions {
     flex-direction: column;
+  }
+
+  .stage-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .btn-small {
+    width: 100%;
   }
 }
 
