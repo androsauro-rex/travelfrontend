@@ -12,7 +12,6 @@
 }
 
 /* ================= RESET ================= */
-
 * {
   margin: 0;
   padding: 0;
@@ -26,7 +25,6 @@ body {
 }
 
 /* ================= NAVBAR ================= */
-
 .navbar {
   background: var(--white);
   border-bottom: 3px solid var(--dark);
@@ -56,7 +54,6 @@ body {
 }
 
 /* ================= PAGE ================= */
-
 .dashboard {
   max-width: 1200px;
   margin: auto;
@@ -75,7 +72,6 @@ body {
 }
 
 /* ================= SECTIONS ================= */
-
 .section-title {
   font-family: var(--font-display);
   font-size: 1.6rem;
@@ -83,7 +79,6 @@ body {
 }
 
 /* ================= BUTTONS ================= */
-
 .btn-primary {
   background: var(--accent);
   border: 3px solid var(--dark);
@@ -131,7 +126,6 @@ body {
 }
 
 /* ================= TRIPS GRID ================= */
-
 .trips-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -139,7 +133,6 @@ body {
 }
 
 /* ================= TRIP CARD ================= */
-
 .trip-card {
   background: var(--white);
   border: 3px solid var(--dark);
@@ -163,7 +156,6 @@ body {
 }
 
 /* ================= STATUS BADGE ================= */
-
 .status-badge {
   align-self: flex-start;
   display: inline-block;
@@ -184,7 +176,6 @@ body {
 }
 
 /* ================= MODAL ================= */
-
 .modal {
   position: fixed;
   inset: 0;
@@ -212,8 +203,6 @@ body {
   padding: 2rem;
 }
 
-/* CLOSE BUTTON */
-
 .modal-close {
   position: absolute;
   top: 1rem;
@@ -233,7 +222,6 @@ body {
 }
 
 /* ================= FORM ================= */
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -260,7 +248,6 @@ textarea {
 }
 
 /* ================= DATES ================= */
-
 .dates-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -268,7 +255,6 @@ textarea {
 }
 
 /* ================= DAYS ================= */
-
 .days-container {
   margin-top: 1.5rem;
   display: flex;
@@ -292,7 +278,6 @@ textarea {
 }
 
 /* ================= STAGES ================= */
-
 .stages-container {
   margin-top: 1rem;
   display: flex;
@@ -308,6 +293,17 @@ textarea {
   justify-content: space-between;
   align-items: center;
   box-shadow: 2px 2px 0 var(--dark);
+}
+
+.stage-edit-box {
+  background: var(--white);
+  border: 2px solid var(--dark);
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 2px 2px 0 var(--dark);
+  width: 100%;
 }
 
 .stage-text {
@@ -330,7 +326,7 @@ textarea {
 
 .new-stage-box {
   margin-top: 1rem;
-  border: 2px solid #ddd;
+  border: 2px solid var(--dark);
   padding: 1rem;
   background: #fafafa;
   border-radius: 0;
@@ -341,6 +337,11 @@ textarea {
   font-weight: 700;
   margin-bottom: 0.8rem;
   font-size: 0.95rem;
+}
+
+.stage-item-actions {
+  display: flex;
+  gap: 0.4rem;
 }
 
 .btn-small {
@@ -357,6 +358,23 @@ textarea {
 .btn-small:hover {
   transform: translate(1px, 1px);
   box-shadow: 1px 1px 0 var(--dark);
+}
+
+.btn-small.btn-edit {
+  background: var(--highlight);
+  color: var(--dark);
+}
+
+.btn-small.btn-save-stage {
+  background: #4caf50;
+  color: white;
+  align-self: flex-end;
+}
+
+.btn-small.btn-cancel-stage {
+  background: var(--gray);
+  color: white;
+  align-self: flex-end;
 }
 
 .btn-add-stage {
@@ -388,7 +406,6 @@ textarea {
 }
 
 /* ================= RESPONSIVE ================= */
-
 @media (max-width: 768px) {
   .dates-grid {
     grid-template-columns: 1fr;
@@ -404,13 +421,17 @@ textarea {
     gap: 0.5rem;
   }
 
+  .stage-item-actions {
+    width: 100%;
+  }
+
   .btn-small {
     width: 100%;
+    text-align: center;
   }
 }
 
 /* ================= TOGGLE ================= */
-
 .toggle {
   display: flex;
   align-items: center;
