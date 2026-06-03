@@ -1,0 +1,282 @@
+:root {
+  --azzuro: #00bbf9;
+  --banana: #fee440;
+  --travel-dark: #121212;
+  --travel-medium:#13002f;
+  --travel-navy: #033c4f;
+  --travel-deep: #062631;
+  --white: #ffffff;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+
+  background: linear-gradient(
+    135deg,
+    var(--travel-medium),
+    var(--travel-deep),
+    var(--travel-navy)
+  );
+
+  color: white;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+
+}
+
+.header h1 {
+  color: var(--azzuro);
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 18px;
+}
+
+/* INFO */
+.trip-info {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(0, 187, 249, 0.4);
+
+  border-radius: 20px;
+  padding: 20px;
+  min-width: 180px;
+
+  text-align: center;
+
+  box-shadow:
+    0 0 10px rgba(0, 187, 249, 0.25),
+    0 0 20px rgba(0, 187, 249, 0.15);
+
+  transition: 0.3s ease;
+}
+
+.info-card h3 {
+  color: var(--banana);
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.info-card p {
+  font-size: 16px;
+}
+
+/* TITOLI SEZIONE */
+.places h2,
+.recap h2 {
+  color: var(--azzuro);
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 40px;
+  letter-spacing: 0.5px;
+}
+
+/* override titolo (giorni) */
+.places h2 {
+  color: var(--banana);
+  font-size: 36px;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(254,228,64,.25);
+}
+
+/* GRID CARDS */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 50px;
+}
+
+/* CARD */
+.place-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.35s ease;
+}
+
+.place-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+  border-color: rgba(0, 187, 249, 0.35);
+}
+
+.place-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.content {
+  padding: 20px;
+}
+
+.content h3 {
+  color: var(--banana);
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.content p {
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* PREZZO */
+.price {
+  margin-top: 15px;
+  background: rgba(0, 187, 249, 0.15);
+  border: 1px solid rgba(0, 187, 249, 0.3);
+  padding: 10px;
+  border-radius: 12px;
+  color: var(--azzuro);
+  font-weight: bold;
+  font-size: 15px;
+}
+
+/* RECENSIONE */
+.review {
+  margin-top: 10px;
+  color: #eaeaea;
+  font-size: 14px;
+}
+
+/* RECAP */
+.recap-box {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 30px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.recap-box p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.recap-box hr {
+  border: none;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 20px 0;
+}
+
+/* TOTAL */
+.total-box {
+  text-align: center;
+}
+
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  margin-top: 10px;
+
+  color: var(--banana);
+}
+
+.total-line .label {
+  color: var(--banana);
+}
+
+
+.total-line .price {
+  color: var(--banana);
+  font-size: 44px;
+  font-weight: 900;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+
+/* BOTTONI BASE IDENTICI */
+.back-btn,
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 14px 30px;
+  border-radius: 16px;
+
+  text-decoration: none;
+
+  font-weight: 700;
+
+  color: white;
+  background: linear-gradient(90deg, var(--azzuro), var(--travel-navy));
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transition: 0.3s ease;
+}
+
+/* button torna agli itinerari*/
+.back-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+/* animazione e colori comuni per entrambi i button */
+.back-btn:hover,
+.save-btn:hover{
+  transform: translateY(-3px) scale(1.03);
+  
+  box-shadow: 0 15px 35px rgba(0, 187, 249, 0.25);
+
+  background: linear-gradient(90deg, var(--banana), var(--azzuro));
+}
+

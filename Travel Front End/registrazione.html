@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Registrazione TravelBuddy</title>
+
+  <link rel="stylesheet" href="style/registrazione.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Slackey&display=swap" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h2>TravelBuddy</h2>
+      <p class="subtitle">Crea il tuo account</p>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="social">
+      <a href="https://accounts.google.com" target="_blank">
+        <img src="assets/google.png" alt="Google">
+      </a>
+      <a href="https://www.facebook.com" target="_blank">
+        <img src="assets/fb.png" alt="Facebook">
+      </a>
+
+      <a href="https://www.instagram.com" target="_blank">
+        <img src="assets/instagram.png" alt="Instagram">
+      </a>
+    </div>
+
+    <p class="divider">Oppure registrati con email</p>
+
+    <!-- FORM -->
+    <form>
+
+      <input type="text" placeholder="Nome" required min maxlength="128">
+
+      <input type="text" placeholder="Cognome" required maxlength="128">
+
+      <input type="text" placeholder="Nickname" required minlength="50">
+
+      <input type="number" placeholder="Età" required min="18">
+
+      <input type="email" placeholder="Email" required>
+
+      <input type="password" placeholder="Password" required minlength="6" maxlength="20"
+             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$">
+
+      <!-- CHECKBOX -->
+      <div class="checkbox">
+        <input type="checkbox" required>
+        <label>Accetto termini e condizioni</label>
+      </div>
+
+      <!-- BUTTON -->
+      <button type="submit">Registrati</button>
+
+      <!-- LOGIN -->
+      <p class="login-text"> Hai già un account?
+        <a href="login.html" class="login-link">Accedi</a>
+      </p>
+
+    </form>
+
+  </div>
+
+</body>
+
+</html>
