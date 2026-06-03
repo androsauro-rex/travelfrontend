@@ -16,9 +16,11 @@ const createBtn = document.getElementById("createTripBtn");
 const closeModalBtn = document.getElementById("closeModalBtn");
 
 // FORM INPUTS
+const destinationInput = document.getElementById("tripDestination");
 const titleInput = document.getElementById("tripTitle");
 const startDateInput = document.getElementById("startDate");
 const endDateInput = document.getElementById("endDate");
+const budgetInput = document.getElementById("tripBudget");
 
 // DAYS
 const daysContainer = document.getElementById("daysContainer");
@@ -28,7 +30,7 @@ const saveDraftBtn = document.getElementById("saveDraftBtn");
 const publishBtn = document.getElementById("publishBtn");
 const generateDaysBtn = document.getElementById("generateDaysBtn");
 
-// 🔥 VISIBILITY
+// VISIBILITY
 const visibilityToggle = document.getElementById("visibilityToggle");
 const visibilityLabel = document.getElementById("visibilityLabel");
 
@@ -36,24 +38,25 @@ const visibilityLabel = document.getElementById("visibilityLabel");
 
 let trips = JSON.parse(localStorage.getItem("trips")) || [];
 let currentTrip = null;
+let activeEditingStage = null;
 
 // ================= TOGGLE VISIBILITY =================
 
 function updateVisibilityUI() {
-  if (!currentTrip) return;
+  if (!currentTrip || !visibilityToggle || !visibilityLabel) return;
 
-  const isPublic = currentTrip.visibility === "PUBLIC";
-
+  const isPublic = currentTrip.visibilita === "PUBLIC";
   visibilityToggle.checked = isPublic;
   visibilityLabel.textContent = isPublic ? "Pubblico" : "Privato";
 }
 
-visibilityToggle.addEventListener("change", () => {
-  if (!currentTrip) return;
-
-  currentTrip.visibility = visibilityToggle.checked ? "PUBLIC" : "PRIVATE";
-  updateVisibilityUI();
-});
+if (visibilityToggle) {
+  visibilityToggle.addEventListener("change", () => {
+    if (!currentTrip) return;
+    currentTrip.visibilita = visibilityToggle.checked ? "PUBLIC" : "PRIVATE";
+    updateVisibilityUI();
+  });
+}
 
 // ================= INIT =================
 
@@ -61,151 +64,170 @@ document.addEventListener("DOMContentLoaded", renderTrips);
 
 // ================= LOGOUT =================
 
-logoutBtn.addEventListener("click", () => {
-  // Rimuovi token e dati utente dal localStorage
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("currentUser");
-  
-  // Mostra messaggio
-  showLogoutNotification();
-  
-  // Redirect alla pagina index dopo 1 secondo
-  setTimeout(() => {
-    window.location.href = "index.html";
-  }, 1000);
-});
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+    showLogoutNotification();
+    setTimeout(() => { window.location.href = "index.html"; }, 1000);
+  });
+}
 
 function showLogoutNotification() {
   const notification = document.createElement('div');
   notification.style.cssText = `
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    background-color: #4caf50;
-    color: white;
-    padding: 1rem 1.5rem;
-    border: 3px solid #000;
-    border-radius: 0;
-    box-shadow: 4px 4px 0 #000;
-    font-weight: 600;
-    font-family: 'Outfit', sans-serif;
-    z-index: 10000;
-    animation: slideIn 0.3s ease;
+    position: fixed; top: 2rem; right: 2rem; background-color: #4caf50; color: white;
+    padding: 1rem 1.5rem; border: 3px solid #000; box-shadow: 4px 4px 0 #000;
+    font-weight: 600; font-family: 'Outfit', sans-serif; z-index: 10000;
   `;
-  
   notification.textContent = '👋 A presto! Logout effettuato';
   document.body.appendChild(notification);
-  
-  setTimeout(() => {
-    notification.style.animation = 'slideOut 0.3s ease forwards';
-    setTimeout(() => notification.remove(), 300);
-  }, 3000);
+  setTimeout(() => { notification.remove(); }, 3000);
 }
 
-// ================= MODAL =================
+// ================= MODAL FIX =================
 
-createBtn.addEventListener("click", () => {
-  openModal(createEmptyTrip());
-});
+if (createBtn) {
+  createBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    openModal(createEmptyTrip());
+  });
+}
 
-closeModalBtn.addEventListener("click", closeModal);
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeModal();
+  });
+}
 
-modal.addEventListener("click", (e) => {
-  if (!modalContent.contains(e.target)) closeModal();
-});
+// Cliccare sullo sfondo chiude la modale...
+if (modal) {
+  modal.addEventListener("click", (e) => {
+    closeModal();
+  });
+}
+
+// ...ma blocchiamo la propagazione del click quando avviene DENTRO il contenuto.
+if (modalContent) {
+  modalContent.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+}
 
 function openModal(trip) {
   currentTrip = trip;
+  activeEditingStage = null; 
 
-  titleInput.value = trip.title || "";
-  startDateInput.value = trip.startDate || "";
-  endDateInput.value = trip.endDate || "";
+  if (destinationInput) destinationInput.value = trip.destinazione || "";
+  if (titleInput) titleInput.value = trip.titoloViaggio || "";
+  if (startDateInput) startDateInput.value = trip.dataInizioViaggio || "";
+  if (endDateInput) endDateInput.value = trip.dataFineViaggio || "";
+  if (budgetInput) budgetInput.value = trip.budgetPianificato || "";
 
-  if (!trip.visibility) trip.visibility = "PRIVATE";
+  if (!trip.visibilita) trip.visibilita = "PRIVATE";
 
-  daysContainer.innerHTML = "";
+  if (daysContainer) daysContainer.innerHTML = "";
 
   updateVisibilityUI();
 
-  // Il check previene errori se days è undefined
   trip.days?.forEach((day, index) => renderDay(day, index));
 
-  modal.classList.remove("hidden");
+  if (modal) modal.classList.remove("hidden");
 }
 
 function closeModal() {
-  modal.classList.add("hidden");
+  if (modal) modal.classList.add("hidden");
   currentTrip = null;
+  activeEditingStage = null;
 }
 
 // ================= TRIP =================
 
 function createEmptyTrip() {
   return {
-    id: Date.now(),
-    title: "",
-    status: "DRAFT",
-    visibility: "PRIVATE",
-    startDate: "",
-    endDate: "",
+    id: null,
+    destinazione: "",
+    titoloViaggio: "",
+    likes: 0,
+    visibilita: "PRIVATE",
+    dataInizioViaggio: "",
+    dataFineViaggio: "",
+    budgetPianificato: 0,
     days: []
   };
 }
 
 // ================= SAVE =================
 
-saveDraftBtn.addEventListener("click", () => saveTrip("DRAFT"));
-publishBtn.addEventListener("click", () => saveTrip("PUBLISHED"));
+if (saveDraftBtn) {
+  saveDraftBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    saveTrip("DRAFT");
+  });
+}
+
+if (publishBtn) {
+  publishBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    saveTrip("PUBLISHED");
+  });
+}
 
 function saveTrip(status) {
   if (!currentTrip) return;
 
-  currentTrip.title = titleInput.value.trim();
-  currentTrip.startDate = startDateInput.value;
-  currentTrip.endDate = endDateInput.value;
-  currentTrip.status = status;
+  currentTrip.destinazione = destinationInput ? destinationInput.value.trim() : "";
+  currentTrip.titoloViaggio = titleInput ? titleInput.value.trim() : "";
+  currentTrip.dataInizioViaggio = startDateInput ? startDateInput.value : "";
+  currentTrip.dataFineViaggio = endDateInput ? endDateInput.value : "";
+  currentTrip.budgetPianificato = budgetInput ? parseFloat(budgetInput.value) || 0 : 0;
+  currentTrip.status = status; 
+
+  if (!currentTrip.id) {
+    currentTrip.id = Date.now(); 
+  }
 
   const index = trips.findIndex(t => t.id === currentTrip.id);
-
   if (index >= 0) trips[index] = currentTrip;
   else trips.push(currentTrip);
 
   localStorage.setItem("trips", JSON.stringify(trips));
-
   renderTrips();
   closeModal();
 }
 
 // ================= DAYS =================
 
-generateDaysBtn.addEventListener("click", () => {
-  if (!currentTrip) return;
+if (generateDaysBtn) {
+  generateDaysBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (!currentTrip || !startDateInput || !endDateInput) return;
 
-  const start = new Date(startDateInput.value);
-  const end = new Date(endDateInput.value);
+    const start = new Date(startDateInput.value);
+    const end = new Date(endDateInput.value);
 
-  if (isNaN(start) || isNaN(end) || end < start) {
-    alert("Inserisci un intervallo di date valido.");
-    return;
-  }
+    if (isNaN(start) || isNaN(end) || end < start) {
+      alert("Inserisci un intervallo di date valido.");
+      return;
+    }
 
-  currentTrip.days = [];
-  daysContainer.innerHTML = "";
+    currentTrip.days = [];
+    if (daysContainer) daysContainer.innerHTML = "";
 
-  let cursor = new Date(start);
+    let cursor = new Date(start);
+    while (cursor <= end) {
+      currentTrip.days.push({
+        date: cursor.toISOString().split('T')[0],
+        title: "",
+        stages: []
+      });
+      cursor.setDate(cursor.getDate() + 1);
+    }
 
-  while (cursor <= end) {
-    currentTrip.days.push({
-      date: cursor.toISOString().split('T')[0], // salva in formato YYYY-MM-DD
-      title: "",
-      stages: []
-    });
-
-    cursor.setDate(cursor.getDate() + 1);
-  }
-
-  currentTrip.days.forEach((day, index) => renderDay(day, index));
-});
+    currentTrip.days.forEach((day, index) => renderDay(day, index));
+  });
+}
 
 // ================= STAGES MANAGEMENT =================
 
@@ -215,8 +237,9 @@ function addStage(dayIndex) {
   const stageTitleInput = document.getElementById(`stage-title-${dayIndex}`);
   const stageDescInput = document.getElementById(`stage-desc-${dayIndex}`);
   
+  if (!stageTitleInput) return;
   const stageTitle = stageTitleInput.value.trim();
-  const stageDesc = stageDescInput.value.trim();
+  const stageDesc = stageDescInput ? stageDescInput.value.trim() : "";
 
   if (!stageTitle) {
     alert("Inserisci un titolo per la tappa");
@@ -230,14 +253,51 @@ function addStage(dayIndex) {
   });
 
   stageTitleInput.value = "";
-  stageDescInput.value = "";
+  if (stageDescInput) stageDescInput.value = "";
   renderStages(dayIndex);
 }
 
 function deleteStage(dayIndex, stageId) {
   if (!currentTrip || !currentTrip.days[dayIndex]) return;
-
   currentTrip.days[dayIndex].stages = currentTrip.days[dayIndex].stages.filter(s => s.id !== stageId);
+  if (activeEditingStage && activeEditingStage.dayIndex === dayIndex && activeEditingStage.stageId === stageId) {
+    activeEditingStage = null;
+  }
+  renderStages(dayIndex);
+}
+
+function editStage(dayIndex, stageId) {
+  activeEditingStage = { dayIndex, stageId };
+  renderStages(dayIndex);
+}
+
+function saveEditedStage(dayIndex, stageId) {
+  if (!currentTrip || !currentTrip.days[dayIndex]) return;
+
+  const editTitleInput = document.getElementById(`edit-stage-title-${stageId}`);
+  const editDescInput = document.getElementById(`edit-stage-desc-${stageId}`);
+
+  if (!editTitleInput) return;
+  const updatedTitle = editTitleInput.value.trim();
+  const updatedDesc = editDescInput ? editDescInput.value.trim() : "";
+
+  if (!updatedTitle) {
+    alert("Il titolo della tappa non può essere vuoto.");
+    return;
+  }
+
+  const stage = currentTrip.days[dayIndex].stages.find(s => s.id === stageId);
+  if (stage) {
+    stage.title = updatedTitle;
+    stage.description = updatedDesc;
+  }
+
+  activeEditingStage = null;
+  renderStages(dayIndex);
+}
+
+function cancelEditStage(dayIndex) {
+  activeEditingStage = null;
   renderStages(dayIndex);
 }
 
@@ -248,31 +308,49 @@ function renderStages(dayIndex) {
   if (!stagesContainer) return;
 
   stagesContainer.innerHTML = "";
-
   const day = currentTrip.days[dayIndex];
 
   if (day.stages && day.stages.length > 0) {
     day.stages.forEach(stage => {
-      const stageItem = document.createElement("div");
-      stageItem.className = "stage-item";
-      stageItem.innerHTML = `
-        <div class="stage-text">
-          <div class="stage-title">📍 ${stage.title}</div>
-          ${stage.description ? `<div class="stage-description">${stage.description}</div>` : ''}
-        </div>
-        <button type="button" class="btn-small" onclick="deleteStage(${dayIndex}, ${stage.id})">Elimina</button>
-      `;
-      stagesContainer.appendChild(stageItem);
+      const isEditing = activeEditingStage && 
+                        activeEditingStage.dayIndex === dayIndex && 
+                        activeEditingStage.stageId === stage.id;
+
+      if (isEditing) {
+        const editBox = document.createElement("div");
+        editBox.className = "stage-edit-box";
+        editBox.innerHTML = `
+          <input type="text" id="edit-stage-title-${stage.id}" class="stage-input" value="${stage.title}" style="margin-top:0;">
+          <textarea id="edit-stage-desc-${stage.id}" class="stage-input" rows="2">${stage.description || ''}</textarea>
+          <div class="stage-item-actions" style="align-self: flex-end; margin-top: 0.3rem;">
+            <button type="button" class="btn-small btn-cancel-stage" data-day="${dayIndex}">Annulla</button>
+            <button type="button" class="btn-small btn-save-stage" data-day="${dayIndex}" data-stage="${stage.id}">Salva</button>
+          </div>
+        `;
+        stagesContainer.appendChild(editBox);
+      } else {
+        const stageItem = document.createElement("div");
+        stageItem.className = "stage-item";
+        stageItem.innerHTML = `
+          <div class="stage-text">
+            <div class="stage-title">📍 ${stage.title}</div>
+            ${stage.description ? `<div class="stage-description">${stage.description}</div>` : ''}
+          </div>
+          <div class="stage-item-actions">
+            <button type="button" class="btn-small btn-edit" data-day="${dayIndex}" data-stage="${stage.id}">Modifica</button>
+            <button type="button" class="btn-small btn-delete" data-day="${dayIndex}" data-stage="${stage.id}">Elimina</button>
+          </div>
+        `;
+        stagesContainer.appendChild(stageItem);
+      }
     });
   }
 }
 
-// FUNZIONE AGGIUNTA: Renderizza i singoli giorni all'interno del modale
 function renderDay(day, index) {
   const dayCard = document.createElement("div");
   dayCard.className = "day-card";
 
-  // Formatta la data per renderla leggibile (DD/MM/YYYY)
   let formattedDate = "";
   if (day.date) {
     const d = new Date(day.date);
@@ -284,7 +362,7 @@ function renderDay(day, index) {
       <span>Giorno ${index + 1}${formattedDate}</span>
     </div>
     <div class="form-group">
-      <input type="text" class="day-title-input" placeholder="Cosa farai in questo giorno? (es. Visita al museo, Relax in spiaggia...)" value="${day.title || ''}">
+      <input type="text" class="day-title-input" placeholder="Cosa farai in questo giorno?" value="${day.title || ''}">
     </div>
     <div class="form-group">
       <label style="font-weight: 700; margin-top: 0.8rem;">Tappe della giornata</label>
@@ -292,39 +370,53 @@ function renderDay(day, index) {
       
       <div class="new-stage-box">
         <p class="new-stage-title">➕ Aggiungi una nuova tappa</p>
-        <input type="text" id="stage-title-${index}" class="stage-input" placeholder="Titolo tappa (es. Colazione, Museo, Cena...)" style="margin-bottom: 0.8rem;">
-        <textarea id="stage-desc-${index}" class="stage-input" placeholder="Descrizione (opzionale - es. Visita la sezione di arte medievale)" rows="2" style="margin-bottom: 0.8rem;"></textarea>
-        <button type="button" class="btn-add-stage" onclick="addStage(${index})">+ Aggiungi tappa</button>
+        <input type="text" id="stage-title-${index}" class="stage-input" placeholder="Titolo tappa..." style="margin-bottom: 0.8rem;">
+        <textarea id="stage-desc-${index}" class="stage-input" placeholder="Descrizione (opzionale)" rows="2" style="margin-bottom: 0.8rem;"></textarea>
+        <button type="button" class="btn-add-stage" data-day="${index}">+ Aggiungi tappa</button>
       </div>
     </div>
   `;
 
-  // Ascolta i cambiamenti sul titolo del giorno e aggiorna lo stato in tempo reale
-  const input = dayCard.querySelector(".day-title-input");
-  input.addEventListener("input", (e) => {
+  dayCard.querySelector(".day-title-input").addEventListener("input", (e) => {
     if (currentTrip && currentTrip.days[index]) {
       currentTrip.days[index].title = e.target.value;
     }
   });
 
-  // Permetti di aggiungere una tappa premendo Ctrl+Enter sulla descrizione
-  const stageDescInput = dayCard.querySelector(`#stage-desc-${index}`);
-  stageDescInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter" && e.ctrlKey) {
+  dayCard.addEventListener("click", (e) => {
+    const target = e.target;
+    
+    if (target.classList.contains("btn-add-stage")) {
       e.preventDefault();
-      addStage(index);
+      addStage(parseInt(target.getAttribute("data-day")));
+    } 
+    else if (target.classList.contains("btn-edit")) {
+      e.preventDefault();
+      editStage(parseInt(target.getAttribute("data-day")), parseInt(target.getAttribute("data-stage")));
+    } 
+    else if (target.classList.contains("btn-delete")) {
+      e.preventDefault();
+      deleteStage(parseInt(target.getAttribute("data-day")), parseInt(target.getAttribute("data-stage")));
+    } 
+    else if (target.classList.contains("btn-save-stage")) {
+      e.preventDefault();
+      saveEditedStage(parseInt(target.getAttribute("data-day")), parseInt(target.getAttribute("data-stage")));
+    } 
+    else if (target.classList.contains("btn-cancel-stage")) {
+      e.preventDefault();
+      cancelEditStage(parseInt(target.getAttribute("data-day")));
     }
   });
 
-  daysContainer.appendChild(dayCard);
-
-  // Renderizza le tappe già esistenti
+  if (daysContainer) daysContainer.appendChild(dayCard);
   renderStages(index);
 }
 
-// ================= RENDER =================
+// ================= RENDER DASHBOARD =================
 
 function renderTrips() {
+  if (!draftContainer || !publishedContainer) return;
+
   draftContainer.innerHTML = "";
   publishedContainer.innerHTML = "";
 
@@ -332,37 +424,35 @@ function renderTrips() {
     const card = document.createElement("div");
     card.className = "trip-card";
 
-    // Gestione dinamica dei badge neo-brutalisti in base allo stato
     const badgeClass = trip.status === "DRAFT" ? "badge-draft" : "badge-published";
     const badgeText = trip.status === "DRAFT" ? "Bozza" : "Pubblicato";
+    const displayTitle = trip.destinazione ? `${trip.destinazione}: ${trip.titoloViaggio || 'Senza titolo'}` : (trip.titoloViaggio || "Senza titolo");
 
     card.innerHTML = `
       <span class="status-badge ${badgeClass}">${badgeText}</span>
-      <h3 class="trip-title">${trip.title || "Senza titolo"}</h3>
-      <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 0.5rem;">
-        ${trip.startDate ? trip.startDate.split('-').reverse().join('/') : '---'} ➔ ${trip.endDate ? trip.endDate.split('-').reverse().join('/') : '---'}
+      <h3 class="trip-title">${displayTitle}</h3>
+      <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 0.2rem;">Budget: <strong>€${parseFloat(trip.budgetPianificato || 0).toFixed(2)}</strong></p>
+      <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem;">
+        ${trip.dataInizioViaggio ? trip.dataInizioViaggio.split('-').reverse().join('/') : '---'} ➔ ${trip.dataFineViaggio ? trip.dataFineViaggio.split('-').reverse().join('/') : '---'}
       </p>
 
       <div class="trip-actions">
-        <button class="btn-primary open-btn">Apri</button>
-        <button class="btn-danger del-btn">Elimina</button>
-        <button class="btn-secondary pdf-btn">PDF</button>
+        <button type="button" class="btn-primary open-btn">Apri</button>
+        <button type="button" class="btn-danger del-btn">Elimina</button>
+        <button type="button" class="btn-secondary pdf-btn">PDF</button>
       </div>
     `;
 
-    const openBtn = card.querySelector(".open-btn");
-    const delBtn = card.querySelector(".del-btn");
-    const pdfBtn = card.querySelector(".pdf-btn");
-
-    openBtn.onclick = () => openModal(trip);
-
-    delBtn.onclick = () => {
+    card.querySelector(".open-btn").onclick = (e) => { e.preventDefault(); openModal(trip); };
+    
+    card.querySelector(".del-btn").onclick = (e) => {
+      e.preventDefault();
       trips = trips.filter(t => t.id !== trip.id);
       localStorage.setItem("trips", JSON.stringify(trips));
       renderTrips();
     };
 
-    pdfBtn.onclick = () => exportTripToPDF(trip);
+    card.querySelector(".pdf-btn").onclick = (e) => { e.preventDefault(); exportTripToPDF(trip); };
 
     if (trip.status === "DRAFT") draftContainer.appendChild(card);
     else publishedContainer.appendChild(card);
@@ -372,22 +462,30 @@ function renderTrips() {
 // ================= PDF =================
 
 function exportTripToPDF(trip) {
+  if (!window.jspdf) {
+    alert("Libreria jsPDF non caricata.");
+    return;
+  }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   doc.setFont("Helvetica", "bold");
   doc.setFontSize(22);
-  doc.text(trip.title || "Itinerario Senza Titolo", 10, 20);
+  doc.text(trip.titoloViaggio || "Itinerario Senza Titolo", 10, 20);
 
   doc.setFontSize(12);
   doc.setFont("Helvetica", "normal");
-  doc.text("Stato: " + (trip.status === "DRAFT" ? "Bozza" : "Pubblicato"), 10, 32);
-  doc.text("Visibilita': " + (trip.visibility === "PUBLIC" ? "Pubblico" : "Privato"), 10, 40);
-  doc.text(`Periodo: ${trip.startDate || '---'} a ${trip.endDate || '---'}`, 10, 48);
+  doc.text("Destinazione: " + (trip.destinazione || "Non specificata"), 10, 30);
+  doc.text("Budget Pianificato: €" + parseFloat(trip.budgetPianificato || 0).toFixed(2), 10, 38);
   
-  doc.line(10, 55, 200, 55);
+  // FIX: Formattazione delle date nel PDF in formato Europeo/Italiano (GG/MM/AAAA)
+  const dataInizioFormattata = trip.dataInizioViaggio ? trip.dataInizioViaggio.split('-').reverse().join('/') : '---';
+  const dataFineFormattata = trip.dataFineViaggio ? trip.dataFineViaggio.split('-').reverse().join('/') : '---';
+  doc.text(`Periodo: dal ${dataInizioFormattata} al ${dataFineFormattata}`, 10, 54);
+  
+  doc.line(10, 59, 200, 59);
 
-  let yOffset = 65;
+  let yOffset = 69;
   if (trip.days && trip.days.length > 0) {
     doc.setFont("Helvetica", "bold");
     doc.text("Programma Giornaliero:", 10, yOffset);
@@ -395,52 +493,36 @@ function exportTripToPDF(trip) {
     
     doc.setFont("Helvetica", "normal");
     trip.days.forEach((day, idx) => {
-      if (yOffset > 270) { // Nuova pagina se lo spazio finisce
-        doc.addPage();
-        yOffset = 20;
-      }
-      const dayLine = `Giorno ${idx + 1} (${day.date || ''}): ${day.title || 'Nessuna attività programmata'}`;
+      if (yOffset > 270) { doc.addPage(); yOffset = 20; }
+      const dayLine = `Giorno ${idx + 1} (${day.date ? day.date.split('-').reverse().join('/') : ''}): ${day.title || 'Nessuna attività programmata'}`;
       doc.text(dayLine, 15, yOffset);
       yOffset += 8;
 
-      // Aggiungi le tappe nel PDF
       if (day.stages && day.stages.length > 0) {
         day.stages.forEach(stage => {
-          if (yOffset > 270) {
-            doc.addPage();
-            yOffset = 20;
-          }
-          doc.setFont("Helvetica", "bold");
-          doc.setFontSize(10);
+          if (yOffset > 270) { doc.addPage(); yOffset = 20; }
+          doc.setFont("Helvetica", "bold"); doc.setFontSize(10);
           doc.text(`  • ${stage.title}`, 20, yOffset);
           yOffset += 6;
 
-          // Aggiungi descrizione se presente
           if (stage.description) {
-            doc.setFont("Helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFont("Helvetica", "normal"); doc.setFontSize(9);
             const descLines = doc.splitTextToSize(stage.description, 170);
             descLines.forEach(line => {
-              if (yOffset > 270) {
-                doc.addPage();
-                yOffset = 20;
-              }
+              if (yOffset > 270) { doc.addPage(); yOffset = 20; }
               doc.text(line, 25, yOffset);
               yOffset += 5;
             });
           }
-
           yOffset += 2;
         });
-        doc.setFontSize(12);
-        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(12); doc.setFont("Helvetica", "normal");
       }
-
       yOffset += 2;
     });
   } else {
     doc.text("Nessun giorno generato nell'itinerario.", 10, yOffset);
   }
 
-  doc.save(`${trip.title ? trip.title.replace(/\s+/g, '_') : 'itinerario'}.pdf`);
+  doc.save(`${trip.titoloViaggio ? trip.titoloViaggio.replace(/\s+/g, '_') : 'itinerario'}.pdf`);
 }
