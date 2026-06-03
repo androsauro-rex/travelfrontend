@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TravelBuddy - Login</title>
+
+  <link rel="stylesheet" href="style/login.css" />
+
+  <!-- Fonts coerenti con TravelBuddy -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+</head>
+
+<body>
+
+  <div class="login-page">
+
+    <div class="login-card">
+
+      <div class="login-header">
+        <h1>Travel<span>Buddy</span></h1>
+        <p>Accedi e riprendi i tuoi viaggi</p>
+      </div>
+
+      <form class="login-form">
+
+        <label>
+          Email
+          <input type="email" id="email" placeholder="nome@email.com" required />
+        </label>
+
+        <label>
+          Password
+          <input type="password" id="password" placeholder="••••••••" minlength="6" maxlength="12" required />
+        </label>
+
+        <button id="btn" class="btn-primary" disabled>
+          Accedi →
+        </button>
+
+        <div class="login-footer">
+          <p>Non hai un account?</p>
+          <a href="registrazione.html">Registrati qui</a>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <script src="script/login.js"></script>
+</body>
+</html>
