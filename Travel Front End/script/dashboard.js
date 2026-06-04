@@ -19,8 +19,6 @@ const titleInput = document.getElementById("tripTitle");
 const startDateInput = document.getElementById("startDate");
 const endDateInput = document.getElementById("endDate");
 const budgetInput = document.getElementById("tripBudget");
-const transportInput = document.getElementById("tripTransport");
-const lodgingInput = document.getElementById("tripLodging");
 
 // GIORNI
 const daysContainer = document.getElementById("daysContainer");
@@ -34,7 +32,7 @@ const generateDaysBtn = document.getElementById("generateDaysBtn");
 const visibilityToggle = document.getElementById("visibilityToggle");
 const visibilityLabel = document.getElementById("visibilityLabel");
 
-// MODALE GESTIONE SPESE EXTRA
+// MODALE GESTIONE SPESE
 const speseModal = document.getElementById("speseModal");
 const speseModalContent = document.getElementById("speseModalContent");
 const closeSpeseModalBtn = document.getElementById("closeSpeseModalBtn");
@@ -56,9 +54,13 @@ const daySelectionList = document.getElementById("daySelectionList");
 const cancelDaySelectionBtn = document.getElementById("cancelDaySelectionBtn");
 const confirmDaySelectionBtn = document.getElementById("confirmDaySelectionBtn");
 
-// ================= ENUM TIPOLOGIE SPESE EXTRA =================
+// ================= ENUM TIPOLOGIE SPESE =================
+// Tutte le spese (trasporti, alloggi, cibo, ecc.) sono raggruppate qui
+// e salvate nella tabella "spese" (titolo, tipologia, costo).
 
-const SPESA_EXTRA_TYPES = {
+const SPESA_TYPES = {
+  TRASPORTO: "Trasporti",
+  ALLOGGIO: "Alloggi",
   CIBO: "Cibo",
   ATTRAZIONE: "Attrazioni",
   SHOPPING: "Shopping",
@@ -69,7 +71,7 @@ const SPESA_EXTRA_TYPES = {
 
 let trips = JSON.parse(localStorage.getItem("trips")) || [];
 let currentTrip = null;          // itinerario aperto nella modale principale
-let speseTripRef = null;         // itinerario di cui si stanno gestendo le spese extra
+let speseTripRef = null;         // itinerario di cui si stanno gestendo le spese
 
 // ================= TOGGLE VISIBILITA =================
 
@@ -96,10 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
   popolaTipologieSpese();
 });
 
-// Popola il menu a tendina delle tipologie di spesa extra
+// Popola il menu a tendina delle tipologie di spesa
 function popolaTipologieSpese() {
   let options = '<option value="">Seleziona tipologia...</option>';
-  Object.values(SPESA_EXTRA_TYPES).forEach(val => {
+  Object.values(SPESA_TYPES).forEach(val => {
     options += `<option value="${val}">${val}</option>`;
   });
   speseExtraTipo.innerHTML = options;
@@ -165,8 +167,6 @@ function openModal(trip) {
   startDateInput.value = trip.startDate || "";
   endDateInput.value = trip.endDate || "";
   budgetInput.value = trip.budgetPianificato || "";
-  transportInput.value = trip.costoTrasporti || "";
-  lodgingInput.value = trip.costoAlloggi || "";
 
   if (!trip.visibility) trip.visibility = "PRIVATE";
 
@@ -196,8 +196,6 @@ function createEmptyTrip() {
     startDate: "",
     endDate: "",
     budgetPianificato: "",
-    costoTrasporti: "",
-    costoAlloggi: "",
     days: [],
     speseExtra: []
   };
@@ -217,24 +215,7 @@ function saveTrip(status) {
   currentTrip.startDate = startDateInput.value;
   currentTrip.endDate = endDateInput.value;
   currentTrip.budgetPianificato = budgetInput.value;
-  currentTrip.costoTrasporti = transportInput.value;
-  currentTrip.costoAlloggi = lodgingInput.value;
   currentTrip.status = status;
-
-  // Validazione costi OBBLIGATORI solo alla pubblicazione
-  if (status === "PUBLISHED") {
-    const trasporti = parseFloat(currentTrip.costoTrasporti);
-    const alloggi = parseFloat(currentTrip.costoAlloggi);
-
-    if (isNaN(trasporti) || trasporti < 0) {
-      showToast("⚠️ Inserisci il costo dei trasporti", "warning");
-      return;
-    }
-    if (isNaN(alloggi) || alloggi < 0) {
-      showToast("⚠️ Inserisci il costo degli alloggi", "warning");
-      return;
-    }
-  }
 
   const index = trips.findIndex(t => t.id === currentTrip.id);
 
@@ -624,7 +605,7 @@ function renderTrips() {
   });
 }
 
-// ================= MODALE GESTIONE SPESE EXTRA =================
+// ================= MODALE GESTIONE SPESE =================
 
 function openSpeseModal(trip) {
   speseTripRef = trip;
@@ -632,7 +613,7 @@ function openSpeseModal(trip) {
   // Assicura che l'array esista (per itinerari vecchi)
   if (!speseTripRef.speseExtra) speseTripRef.speseExtra = [];
 
-  speseModalSubtitle.textContent = `Spese extra di "${trip.title || 'Senza titolo'}"`;
+  speseModalSubtitle.textContent = `Spese di "${trip.title || 'Senza titolo'}"`;
 
   // Pulisci il form
   speseExtraNome.value = "";
@@ -662,7 +643,7 @@ function renderSpeseExtra() {
   const spese = speseTripRef.speseExtra || [];
 
   if (spese.length === 0) {
-    speseExtraList.innerHTML = `<div class="spese-extra-empty">Nessuna spesa extra registrata. Aggiungine una qui sotto!</div>`;
+    speseExtraList.innerHTML = `<div class="spese-extra-empty">Nessuna spesa registrata. Aggiungine una qui sotto!</div>`;
     speseExtraTotal.innerHTML = "";
     return;
   }
@@ -685,7 +666,7 @@ function renderSpeseExtra() {
     speseExtraList.appendChild(item);
   });
 
-  speseExtraTotal.innerHTML = `<span>TOTALE SPESE EXTRA</span><span>€${totale.toFixed(2)}</span>`;
+  speseExtraTotal.innerHTML = `<span>TOTALE SPESE</span><span>€${totale.toFixed(2)}</span>`;
 }
 
 addSpeseExtraBtn.addEventListener("click", () => {
@@ -734,7 +715,7 @@ function deleteSpesaExtra(spesaId) {
   showToast("❌ Spesa eliminata", "warning");
 }
 
-// Salva le spese extra nel localStorage
+// Salva le spese nel localStorage
 saveSpeseBtn.addEventListener("click", () => {
   if (!speseTripRef) return;
 
@@ -744,6 +725,7 @@ saveSpeseBtn.addEventListener("click", () => {
   localStorage.setItem("trips", JSON.stringify(trips));
 
   // QUI in futuro: invio al backend delle spese collegate all'itinerario
+  // (tabella "spese": titolo/nome, tipologia, costo)
   // inviaSpeseAlBackend(speseTripRef.id, speseTripRef.speseExtra);
 
   closeSpeseModal();
@@ -800,7 +782,7 @@ document.head.appendChild(toastStyle);
 
 // ================= PDF =================
 // NOTA: il PDF include destinazione, date, programma giornaliero, tappe.
-// NON include i costi trasporti/alloggi ne' le spese extra (per scelta).
+// NON include le spese (per scelta).
 
 function exportTripToPDF(trip) {
   const { jsPDF } = window.jspdf;
