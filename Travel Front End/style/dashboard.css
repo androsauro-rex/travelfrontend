@@ -12,6 +12,7 @@
 }
 
 /* ================= RESET ================= */
+
 * {
   margin: 0;
   padding: 0;
@@ -25,6 +26,7 @@ body {
 }
 
 /* ================= NAVBAR ================= */
+
 .navbar {
   background: var(--white);
   border-bottom: 3px solid var(--dark);
@@ -54,6 +56,7 @@ body {
 }
 
 /* ================= PAGE ================= */
+
 .dashboard {
   max-width: 1200px;
   margin: auto;
@@ -72,6 +75,7 @@ body {
 }
 
 /* ================= SECTIONS ================= */
+
 .section-title {
   font-family: var(--font-display);
   font-size: 1.6rem;
@@ -79,6 +83,7 @@ body {
 }
 
 /* ================= BUTTONS ================= */
+
 .btn-primary {
   background: var(--accent);
   border: 3px solid var(--dark);
@@ -125,7 +130,32 @@ body {
   box-shadow: 2px 2px 0 var(--dark);
 }
 
+.btn-danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 4px 4px 0 var(--dark);
+}
+
+/* Pulsante "Gestione Spese" nella card */
+.btn-spese-manage {
+  background: var(--highlight);
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 var(--dark);
+  padding: 0.9rem 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  color: var(--dark);
+  transition: all .15s ease;
+}
+
+.btn-spese-manage:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--dark);
+}
+
 /* ================= TRIPS GRID ================= */
+
 .trips-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -133,6 +163,7 @@ body {
 }
 
 /* ================= TRIP CARD ================= */
+
 .trip-card {
   background: var(--white);
   border: 3px solid var(--dark);
@@ -153,9 +184,11 @@ body {
   display: flex;
   gap: 0.5rem;
   margin-top: auto;
+  flex-wrap: wrap;
 }
 
 /* ================= STATUS BADGE ================= */
+
 .status-badge {
   align-self: flex-start;
   display: inline-block;
@@ -176,6 +209,7 @@ body {
 }
 
 /* ================= MODAL ================= */
+
 .modal {
   position: fixed;
   inset: 0;
@@ -203,6 +237,8 @@ body {
   padding: 2rem;
 }
 
+/* CLOSE BUTTON */
+
 .modal-close {
   position: absolute;
   top: 1rem;
@@ -222,6 +258,7 @@ body {
 }
 
 /* ================= FORM ================= */
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -233,7 +270,7 @@ body {
   font-weight: 700;
 }
 
-input, textarea {
+input, textarea, select {
   border: 3px solid var(--dark);
   padding: 0.8rem;
   box-shadow: 4px 4px 0 var(--dark);
@@ -248,6 +285,7 @@ textarea {
 }
 
 /* ================= DATES ================= */
+
 .dates-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -255,6 +293,7 @@ textarea {
 }
 
 /* ================= DAYS ================= */
+
 .days-container {
   margin-top: 1.5rem;
   display: flex;
@@ -278,6 +317,7 @@ textarea {
 }
 
 /* ================= STAGES ================= */
+
 .stages-container {
   margin-top: 1rem;
   display: flex;
@@ -293,17 +333,6 @@ textarea {
   justify-content: space-between;
   align-items: center;
   box-shadow: 2px 2px 0 var(--dark);
-}
-
-.stage-edit-box {
-  background: var(--white);
-  border: 2px solid var(--dark);
-  padding: 0.8rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  box-shadow: 2px 2px 0 var(--dark);
-  width: 100%;
 }
 
 .stage-text {
@@ -326,7 +355,7 @@ textarea {
 
 .new-stage-box {
   margin-top: 1rem;
-  border: 2px solid var(--dark);
+  border: 2px solid #ddd;
   padding: 1rem;
   background: #fafafa;
   border-radius: 0;
@@ -337,11 +366,6 @@ textarea {
   font-weight: 700;
   margin-bottom: 0.8rem;
   font-size: 0.95rem;
-}
-
-.stage-item-actions {
-  display: flex;
-  gap: 0.4rem;
 }
 
 .btn-small {
@@ -358,23 +382,6 @@ textarea {
 .btn-small:hover {
   transform: translate(1px, 1px);
   box-shadow: 1px 1px 0 var(--dark);
-}
-
-.btn-small.btn-edit {
-  background: var(--highlight);
-  color: var(--dark);
-}
-
-.btn-small.btn-save-stage {
-  background: #4caf50;
-  color: white;
-  align-self: flex-end;
-}
-
-.btn-small.btn-cancel-stage {
-  background: var(--gray);
-  color: white;
-  align-self: flex-end;
 }
 
 .btn-add-stage {
@@ -405,7 +412,201 @@ textarea {
   margin-top: 0.5rem;
 }
 
+/* ================= SPESE EXTRA (MODALE GESTIONE SPESE) ================= */
+
+.spese-extra-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.spesa-extra-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem;
+  background: var(--white);
+  border: 2px solid var(--dark);
+  box-shadow: 3px 3px 0 var(--dark);
+  gap: 0.8rem;
+}
+
+.spesa-extra-info {
+  flex: 1;
+}
+
+.spesa-extra-nome {
+  font-weight: 700;
+  color: var(--dark);
+  font-size: 1rem;
+}
+
+.spesa-extra-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border: 2px solid var(--dark);
+  margin-left: 0.5rem;
+}
+
+.spesa-extra-costo {
+  color: var(--accent);
+  font-weight: 900;
+  font-size: 1.1rem;
+  font-family: var(--font-display);
+  white-space: nowrap;
+}
+
+.spese-extra-total {
+  margin-top: 1.2rem;
+  padding: 1rem;
+  background: var(--highlight);
+  border: 3px solid var(--dark);
+  box-shadow: 4px 4px 0 var(--dark);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.spese-extra-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--gray);
+  font-style: italic;
+  border: 2px dashed #ccc;
+  margin-top: 1rem;
+}
+
+.add-spesa-box {
+  background: #fafafa;
+  padding: 1rem;
+  border: 2px solid var(--highlight);
+}
+
+.spesa-input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.spesa-select,
+.spesa-cost-input {
+  padding: 0.6rem;
+  border: 2px solid var(--dark);
+  box-shadow: 2px 2px 0 var(--dark);
+  font-family: var(--font-body);
+  outline: none;
+}
+
+.spesa-select:focus,
+.spesa-cost-input:focus {
+  border-color: var(--accent);
+}
+
+.spesa-desc-input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid var(--dark);
+  box-shadow: 2px 2px 0 var(--dark);
+  font-family: var(--font-body);
+  outline: none;
+}
+
+.spesa-desc-input:focus {
+  border-color: var(--accent);
+}
+
+.btn-spesa {
+  background: var(--accent);
+  border: 2px solid var(--dark);
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--white);
+  transition: all .15s ease;
+  box-shadow: 2px 2px 0 var(--dark);
+  font-family: var(--font-body);
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-spesa:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--dark);
+}
+
+/* ================= SELEZIONE GIORNI DA RIMUOVERE ================= */
+
+.day-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.day-selection-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.9rem;
+  background: var(--white);
+  border: 2px solid var(--dark);
+  box-shadow: 3px 3px 0 var(--dark);
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.day-selection-item:hover {
+  background: var(--light);
+}
+
+.day-selection-item.selected {
+  background: #ffe5dd;
+  border-color: var(--accent);
+}
+
+.day-selection-item input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  box-shadow: none;
+  padding: 0;
+  border: 2px solid var(--dark);
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.day-selection-info {
+  flex: 1;
+}
+
+.day-selection-title {
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+.day-selection-detail {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-top: 0.2rem;
+}
+
+.day-selection-counter {
+  margin-top: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 /* ================= RESPONSIVE ================= */
+
 @media (max-width: 768px) {
   .dates-grid {
     grid-template-columns: 1fr;
@@ -415,23 +616,28 @@ textarea {
     flex-direction: column;
   }
 
+  .spesa-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .spesa-extra-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .stage-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
 
-  .stage-item-actions {
-    width: 100%;
-  }
-
   .btn-small {
     width: 100%;
-    text-align: center;
   }
 }
 
 /* ================= TOGGLE ================= */
+
 .toggle {
   display: flex;
   align-items: center;
