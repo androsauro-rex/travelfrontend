@@ -42,6 +42,7 @@
 
 </main>
 
+<!-- ============ MODALE ITINERARIO ============ -->
 <div id="tripModal" class="modal hidden">
   <div id="modalContent" class="modal-content">
 
@@ -86,16 +87,89 @@
 
     <div class="form-group">
       <label>Budget Pianificato (€)</label>
-      <input id="tripBudget" type="number" step="0.01" min="0.01" placeholder="0.00">
+      <input id="tripBudget" type="number" step="0.01" min="0" placeholder="0.00">
     </div>
 
-    <button id="generateDaysBtn" class="btn-secondary" style="margin-top: 1rem;">Genera giorni</button>
+    <!-- NUOVI CAMPI COSTI OBBLIGATORI -->
+    <div class="dates-grid">
+      <div class="form-group">
+        <label>Costo Trasporti (€) *</label>
+        <input id="tripTransport" type="number" step="0.01" min="0" placeholder="Voli, treni, bus...">
+      </div>
+
+      <div class="form-group">
+        <label>Costo Alloggi (€) *</label>
+        <input id="tripLodging" type="number" step="0.01" min="0" placeholder="Hotel, ostelli, B&B...">
+      </div>
+    </div>
+
+    <button id="generateDaysBtn" class="btn-secondary" style="margin-top: 1rem;">Genera / Aggiorna giorni</button>
 
     <div id="daysContainer" class="days-container"></div>
 
     <div class="trip-actions" style="margin-top: 2rem;">
       <button id="saveDraftBtn" class="btn-secondary">Salva bozza</button>
       <button id="publishBtn" class="btn-primary">Pubblica</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ MODALE GESTIONE SPESE EXTRA ============ -->
+<div id="speseModal" class="modal hidden">
+  <div id="speseModalContent" class="modal-content">
+
+    <button id="closeSpeseModalBtn" class="modal-close">✕</button>
+
+    <h2>Gestione Spese</h2>
+    <p class="page-subtitle" id="speseModalSubtitle">Spese extra dell'itinerario</p>
+
+    <!-- Lista spese esistenti -->
+    <div id="speseExtraList" class="spese-extra-list"></div>
+
+    <!-- Totale -->
+    <div id="speseExtraTotal" class="spese-extra-total"></div>
+
+    <!-- Form aggiunta spesa -->
+    <div class="add-spesa-box" style="margin-top: 1.5rem;">
+      <p class="new-stage-title">➕ Aggiungi una nuova spesa</p>
+
+      <div class="form-group">
+        <label>Nome spesa</label>
+        <input type="text" id="speseExtraNome" class="spesa-desc-input" placeholder="Es. Pranzo al ristorante">
+      </div>
+
+      <div class="spesa-input-row" style="margin-top: 0.8rem;">
+        <select id="speseExtraTipo" class="spesa-select">
+          <option value="">Seleziona tipologia...</option>
+        </select>
+        <input type="number" id="speseExtraCosto" class="spesa-cost-input" placeholder="€ Costo" step="0.01" min="0">
+      </div>
+
+      <button type="button" id="addSpeseExtraBtn" class="btn-spesa">+ Aggiungi Spesa</button>
+    </div>
+
+    <div class="trip-actions" style="margin-top: 2rem;">
+      <button id="saveSpeseBtn" class="btn-primary">Salva spese</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ MODALE SELEZIONE GIORNI DA RIMUOVERE ============ -->
+<div id="daySelectionModal" class="modal hidden">
+  <div id="daySelectionContent" class="modal-content" style="max-width: 600px;">
+
+    <button id="closeDaySelectionBtn" class="modal-close">✕</button>
+
+    <h2>Riduci giorni del viaggio</h2>
+    <p class="page-subtitle" id="daySelectionSubtitle"></p>
+
+    <div id="daySelectionList" class="day-selection-list"></div>
+
+    <div class="trip-actions" style="margin-top: 2rem;">
+      <button id="cancelDaySelectionBtn" class="btn-secondary">Annulla</button>
+      <button id="confirmDaySelectionBtn" class="btn-danger" disabled>Conferma rimozione</button>
     </div>
 
   </div>

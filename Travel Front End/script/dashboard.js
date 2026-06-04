@@ -7,48 +7,71 @@ const logoutBtn = document.querySelector('.navbar-container .btn-secondary');
 const draftContainer = document.getElementById("draftTripsContainer");
 const publishedContainer = document.getElementById("publishedTripsContainer");
 
-// MODAL
+// MODALE ITINERARIO
 const modal = document.getElementById("tripModal");
 const modalContent = document.getElementById("modalContent");
-
-// BUTTONS
 const createBtn = document.getElementById("createTripBtn");
 const closeModalBtn = document.getElementById("closeModalBtn");
 
-// FORM INPUTS
+// FORM INPUTS ITINERARIO
+const destinationInput = document.getElementById("tripDestination");
 const titleInput = document.getElementById("tripTitle");
 const startDateInput = document.getElementById("startDate");
 const endDateInput = document.getElementById("endDate");
+const budgetInput = document.getElementById("tripBudget");
+const transportInput = document.getElementById("tripTransport");
+const lodgingInput = document.getElementById("tripLodging");
 
-// DAYS
+// GIORNI
 const daysContainer = document.getElementById("daysContainer");
 
-// ACTIONS
+// ACTIONS ITINERARIO
 const saveDraftBtn = document.getElementById("saveDraftBtn");
 const publishBtn = document.getElementById("publishBtn");
 const generateDaysBtn = document.getElementById("generateDaysBtn");
 
-// 🔥 VISIBILITY
+// VISIBILITA ITINERARIO
 const visibilityToggle = document.getElementById("visibilityToggle");
 const visibilityLabel = document.getElementById("visibilityLabel");
 
-// ================= ENUM SPESE =================
+// MODALE GESTIONE SPESE EXTRA
+const speseModal = document.getElementById("speseModal");
+const speseModalContent = document.getElementById("speseModalContent");
+const closeSpeseModalBtn = document.getElementById("closeSpeseModalBtn");
+const speseModalSubtitle = document.getElementById("speseModalSubtitle");
+const speseExtraList = document.getElementById("speseExtraList");
+const speseExtraTotal = document.getElementById("speseExtraTotal");
+const speseExtraNome = document.getElementById("speseExtraNome");
+const speseExtraTipo = document.getElementById("speseExtraTipo");
+const speseExtraCosto = document.getElementById("speseExtraCosto");
+const addSpeseExtraBtn = document.getElementById("addSpeseExtraBtn");
+const saveSpeseBtn = document.getElementById("saveSpeseBtn");
 
-const SPESA_TYPES = {
-  VITTO: "Cibo",
-  TRASPORTO: "Trasporto",
-  ALLOGGIO: "Alloggio",
-  ATTRAZIONE: "Attrazione",
+// MODALE SELEZIONE GIORNI DA RIMUOVERE
+const daySelectionModal = document.getElementById("daySelectionModal");
+const daySelectionContent = document.getElementById("daySelectionContent");
+const closeDaySelectionBtn = document.getElementById("closeDaySelectionBtn");
+const daySelectionSubtitle = document.getElementById("daySelectionSubtitle");
+const daySelectionList = document.getElementById("daySelectionList");
+const cancelDaySelectionBtn = document.getElementById("cancelDaySelectionBtn");
+const confirmDaySelectionBtn = document.getElementById("confirmDaySelectionBtn");
+
+// ================= ENUM TIPOLOGIE SPESE EXTRA =================
+
+const SPESA_EXTRA_TYPES = {
+  CIBO: "Cibo",
+  ATTRAZIONE: "Attrazioni",
   SHOPPING: "Shopping",
-  ALTRO: "Altro"
+  EXTRA: "Extra"
 };
 
-// ================= STATE =================
+// ================= STATO =================
 
 let trips = JSON.parse(localStorage.getItem("trips")) || [];
-let currentTrip = null;
+let currentTrip = null;          // itinerario aperto nella modale principale
+let speseTripRef = null;         // itinerario di cui si stanno gestendo le spese extra
 
-// ================= TOGGLE VISIBILITY =================
+// ================= TOGGLE VISIBILITA =================
 
 function updateVisibilityUI() {
   if (!currentTrip) return;
@@ -68,19 +91,28 @@ visibilityToggle.addEventListener("change", () => {
 
 // ================= INIT =================
 
-document.addEventListener("DOMContentLoaded", renderTrips);
+document.addEventListener("DOMContentLoaded", () => {
+  renderTrips();
+  popolaTipologieSpese();
+});
+
+// Popola il menu a tendina delle tipologie di spesa extra
+function popolaTipologieSpese() {
+  let options = '<option value="">Seleziona tipologia...</option>';
+  Object.values(SPESA_EXTRA_TYPES).forEach(val => {
+    options += `<option value="${val}">${val}</option>`;
+  });
+  speseExtraTipo.innerHTML = options;
+}
 
 // ================= LOGOUT =================
 
 logoutBtn.addEventListener("click", () => {
-  // Rimuovi token e dati utente dal localStorage
   localStorage.removeItem("authToken");
   localStorage.removeItem("currentUser");
-  
-  // Mostra messaggio
+
   showLogoutNotification();
-  
-  // Redirect alla pagina index dopo 1 secondo
+
   setTimeout(() => {
     window.location.href = "index.html";
   }, 1000);
@@ -103,17 +135,17 @@ function showLogoutNotification() {
     z-index: 10000;
     animation: slideIn 0.3s ease;
   `;
-  
+
   notification.textContent = '👋 A presto! Logout effettuato';
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.style.animation = 'slideOut 0.3s ease forwards';
     setTimeout(() => notification.remove(), 300);
   }, 3000);
 }
 
-// ================= MODAL =================
+// ================= MODALE ITINERARIO =================
 
 createBtn.addEventListener("click", () => {
   openModal(createEmptyTrip());
@@ -122,17 +154,19 @@ createBtn.addEventListener("click", () => {
 closeModalBtn.addEventListener("click", closeModal);
 
 modal.addEventListener("click", (e) => {
-  // Chiudi SOLO se il click è avvenuto direttamente sullo sfondo della modale
-  // (e non su un elemento interno che potrebbe essere stato rimosso dinamicamente)
   if (e.target === modal) closeModal();
 });
 
 function openModal(trip) {
   currentTrip = trip;
 
+  destinationInput.value = trip.destination || "";
   titleInput.value = trip.title || "";
   startDateInput.value = trip.startDate || "";
   endDateInput.value = trip.endDate || "";
+  budgetInput.value = trip.budgetPianificato || "";
+  transportInput.value = trip.costoTrasporti || "";
+  lodgingInput.value = trip.costoAlloggi || "";
 
   if (!trip.visibility) trip.visibility = "PRIVATE";
 
@@ -140,7 +174,6 @@ function openModal(trip) {
 
   updateVisibilityUI();
 
-  // Il check previene errori se days è undefined
   trip.days?.forEach((day, index) => renderDay(day, index));
 
   modal.classList.remove("hidden");
@@ -156,12 +189,17 @@ function closeModal() {
 function createEmptyTrip() {
   return {
     id: Date.now(),
+    destination: "",
     title: "",
     status: "DRAFT",
     visibility: "PRIVATE",
     startDate: "",
     endDate: "",
-    days: []
+    budgetPianificato: "",
+    costoTrasporti: "",
+    costoAlloggi: "",
+    days: [],
+    speseExtra: []
   };
 }
 
@@ -173,23 +211,30 @@ publishBtn.addEventListener("click", () => saveTrip("PUBLISHED"));
 function saveTrip(status) {
   if (!currentTrip) return;
 
+  // Raccolta dati dal form
+  currentTrip.destination = destinationInput.value.trim();
   currentTrip.title = titleInput.value.trim();
   currentTrip.startDate = startDateInput.value;
   currentTrip.endDate = endDateInput.value;
+  currentTrip.budgetPianificato = budgetInput.value;
+  currentTrip.costoTrasporti = transportInput.value;
+  currentTrip.costoAlloggi = lodgingInput.value;
   currentTrip.status = status;
 
-  // Calcola budget totale da tutte le spese
-  let budgetTotale = 0;
-  currentTrip.days.forEach(day => {
-    day.stages.forEach(stage => {
-      if (stage.spese && stage.spese.length > 0) {
-        stage.spese.forEach(spesa => {
-          budgetTotale += parseFloat(spesa.costo) || 0;
-        });
-      }
-    });
-  });
-  currentTrip.budgetPianificato = budgetTotale;
+  // Validazione costi OBBLIGATORI solo alla pubblicazione
+  if (status === "PUBLISHED") {
+    const trasporti = parseFloat(currentTrip.costoTrasporti);
+    const alloggi = parseFloat(currentTrip.costoAlloggi);
+
+    if (isNaN(trasporti) || trasporti < 0) {
+      showToast("⚠️ Inserisci il costo dei trasporti", "warning");
+      return;
+    }
+    if (isNaN(alloggi) || alloggi < 0) {
+      showToast("⚠️ Inserisci il costo degli alloggi", "warning");
+      return;
+    }
+  }
 
   const index = trips.findIndex(t => t.id === currentTrip.id);
 
@@ -200,7 +245,7 @@ function saveTrip(status) {
 
   renderTrips();
   closeModal();
-  
+
   if (status === "DRAFT") {
     showToast("✅ Itinerario salvato come bozza", "success");
   } else {
@@ -208,7 +253,7 @@ function saveTrip(status) {
   }
 }
 
-// ================= DAYS =================
+// ================= GENERAZIONE / AGGIORNAMENTO GIORNI =================
 
 generateDaysBtn.addEventListener("click", () => {
   if (!currentTrip) return;
@@ -221,38 +266,198 @@ generateDaysBtn.addEventListener("click", () => {
     return;
   }
 
-  currentTrip.days = [];
-  daysContainer.innerHTML = "";
+  // Calcola quanti giorni servono nel nuovo intervallo
+  const nuovoNumGiorni = diffInGiorni(start, end) + 1;
+  const attualeNumGiorni = currentTrip.days ? currentTrip.days.length : 0;
 
-  let cursor = new Date(start);
+  // CASO 1: nessun giorno ancora -> genera da zero
+  if (attualeNumGiorni === 0) {
+    currentTrip.days = costruisciGiorniVuoti(start, nuovoNumGiorni);
+    renderAllDays();
+    return;
+  }
 
-  while (cursor <= end) {
-    currentTrip.days.push({
-      date: cursor.toISOString().split('T')[0], // salva in formato YYYY-MM-DD
+  // CASO 2: stesso numero di giorni -> aggiorna solo le date, mantieni contenuto
+  if (nuovoNumGiorni === attualeNumGiorni) {
+    ricalcolaDate(start);
+    renderAllDays();
+    showToast("📅 Date aggiornate", "success");
+    return;
+  }
+
+  // CASO 3: piu giorni -> aggiungi card vuote in fondo, mantieni esistenti
+  if (nuovoNumGiorni > attualeNumGiorni) {
+    const daAggiungere = nuovoNumGiorni - attualeNumGiorni;
+    for (let i = 0; i < daAggiungere; i++) {
+      currentTrip.days.push({ date: "", title: "", stages: [] });
+    }
+    ricalcolaDate(start);
+    renderAllDays();
+    showToast(`📅 Aggiunti ${daAggiungere} giorno/i`, "success");
+    return;
+  }
+
+  // CASO 4: meno giorni -> chiedi all'utente QUALI rimuovere
+  const daRimuovere = attualeNumGiorni - nuovoNumGiorni;
+  openDaySelectionModal(daRimuovere, start);
+});
+
+// Differenza in giorni tra due date (ignora ore/fusi)
+function diffInGiorni(start, end) {
+  const msPerGiorno = 1000 * 60 * 60 * 24;
+  const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  return Math.round((e - s) / msPerGiorno);
+}
+
+// Costruisce un array di N giorni vuoti con date consecutive da "start"
+function costruisciGiorniVuoti(start, numGiorni) {
+  const giorni = [];
+  const cursor = new Date(start);
+  for (let i = 0; i < numGiorni; i++) {
+    giorni.push({
+      date: cursor.toISOString().split('T')[0],
       title: "",
       stages: []
     });
-
     cursor.setDate(cursor.getDate() + 1);
   }
+  return giorni;
+}
 
+// Riassegna date consecutive ai giorni esistenti (mantiene titoli e tappe)
+function ricalcolaDate(start) {
+  const cursor = new Date(start);
+  currentTrip.days.forEach(day => {
+    day.date = cursor.toISOString().split('T')[0];
+    cursor.setDate(cursor.getDate() + 1);
+  });
+}
+
+// Ridisegna tutti i giorni nella modale
+function renderAllDays() {
+  daysContainer.innerHTML = "";
   currentTrip.days.forEach((day, index) => renderDay(day, index));
+}
+
+// ================= MODALE SELEZIONE GIORNI DA RIMUOVERE =================
+
+let pendingStart = null;       // data di inizio "in attesa" durante la selezione
+let pendingDaRimuovere = 0;    // quanti giorni vanno rimossi
+
+function openDaySelectionModal(daRimuovere, start) {
+  pendingStart = start;
+  pendingDaRimuovere = daRimuovere;
+
+  daySelectionSubtitle.textContent =
+    `Il nuovo intervallo richiede ${daRimuovere} giorno/i in meno. Seleziona quale/i giorno/i vuoi rimuovere (contenuto compreso).`;
+
+  // Costruisci la lista con checkbox
+  daySelectionList.innerHTML = "";
+  currentTrip.days.forEach((day, index) => {
+    const item = document.createElement("div");
+    item.className = "day-selection-item";
+
+    const numTappe = day.stages ? day.stages.length : 0;
+    const dataLeggibile = day.date ? day.date.split('-').reverse().join('/') : '---';
+    const titoloGiorno = day.title ? day.title : "(nessun titolo)";
+
+    item.innerHTML = `
+      <input type="checkbox" data-index="${index}">
+      <div class="day-selection-info">
+        <div class="day-selection-title">Giorno ${index + 1} - ${dataLeggibile}</div>
+        <div class="day-selection-detail">${titoloGiorno} · ${numTappe} tappa/e</div>
+      </div>
+    `;
+
+    // Click sull'intera riga = toggle del checkbox
+    item.addEventListener("click", (e) => {
+      const checkbox = item.querySelector("input[type='checkbox']");
+      if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
+      item.classList.toggle("selected", checkbox.checked);
+      aggiornaContatoreSelezione();
+    });
+
+    daySelectionList.appendChild(item);
+  });
+
+  // Contatore
+  const counter = document.createElement("div");
+  counter.className = "day-selection-counter";
+  counter.id = "daySelectionCounter";
+  counter.textContent = `Selezionati: 0 / ${daRimuovere}`;
+  daySelectionList.appendChild(counter);
+
+  confirmDaySelectionBtn.disabled = true;
+  daySelectionModal.classList.remove("hidden");
+}
+
+function aggiornaContatoreSelezione() {
+  const selezionati = daySelectionList.querySelectorAll("input[type='checkbox']:checked").length;
+  const counter = document.getElementById("daySelectionCounter");
+  if (counter) counter.textContent = `Selezionati: ${selezionati} / ${pendingDaRimuovere}`;
+
+  // Abilita conferma solo quando il numero selezionato e' esattamente quello richiesto
+  confirmDaySelectionBtn.disabled = (selezionati !== pendingDaRimuovere);
+}
+
+function closeDaySelection() {
+  daySelectionModal.classList.add("hidden");
+  pendingStart = null;
+  pendingDaRimuovere = 0;
+}
+
+closeDaySelectionBtn.addEventListener("click", closeDaySelection);
+cancelDaySelectionBtn.addEventListener("click", closeDaySelection);
+
+daySelectionModal.addEventListener("click", (e) => {
+  if (e.target === daySelectionModal) closeDaySelection();
 });
 
-// ================= STAGES MANAGEMENT =================
+confirmDaySelectionBtn.addEventListener("click", () => {
+  // Conferma irreversibile
+  const conferma = confirm(
+    "Sei sicuro di voler rimuovere i giorni selezionati?\n\n" +
+    "Tutto il contenuto di quei giorni (titoli e tappe) verra' perso. " +
+    "L'operazione NON e' reversibile."
+  );
+  if (!conferma) return;
+
+  // Raccogli gli indici selezionati
+  const indiciDaRimuovere = [];
+  daySelectionList.querySelectorAll("input[type='checkbox']:checked").forEach(cb => {
+    indiciDaRimuovere.push(parseInt(cb.dataset.index));
+  });
+
+  // Tieni solo i giorni NON selezionati
+  currentTrip.days = currentTrip.days.filter((day, index) => !indiciDaRimuovere.includes(index));
+
+  // Ricalcola le date consecutive sui giorni rimasti
+  ricalcolaDate(pendingStart);
+
+  renderAllDays();
+  closeDaySelection();
+  showToast("🗑️ Giorni rimossi e date aggiornate", "warning");
+});
+
+// ================= TAPPE (STAGES) =================
 
 function addStage(dayIndex) {
   if (!currentTrip || !currentTrip.days[dayIndex]) return;
 
   const stageTitleInput = document.getElementById(`stage-title-${dayIndex}`);
   const stageDescInput = document.getElementById(`stage-desc-${dayIndex}`);
-  
+
   const stageTitle = stageTitleInput.value.trim();
   const stageDesc = stageDescInput.value.trim();
 
   if (!stageTitle) {
     alert("Inserisci un titolo per la tappa");
     return;
+  }
+
+  if (!currentTrip.days[dayIndex].stages) {
+    currentTrip.days[dayIndex].stages = [];
   }
 
   currentTrip.days[dayIndex].stages.push({
@@ -284,7 +489,7 @@ function renderStages(dayIndex) {
   const day = currentTrip.days[dayIndex];
 
   if (day.stages && day.stages.length > 0) {
-    day.stages.forEach((stage, stageIndex) => {
+    day.stages.forEach(stage => {
       const stageItem = document.createElement("div");
       stageItem.className = "stage-item";
       stageItem.innerHTML = `
@@ -295,128 +500,23 @@ function renderStages(dayIndex) {
         <button type="button" class="btn-small" onclick="deleteStage(${dayIndex}, ${stage.id})">Elimina</button>
       `;
       stagesContainer.appendChild(stageItem);
-
-      // Renderizza spese della tappa
-      renderSpese(dayIndex, stageIndex, stage);
     });
   }
 }
 
-// ================= SPESE MANAGEMENT =================
+// ================= RENDER GIORNO =================
 
-function renderSpese(dayIndex, stageIndex, stage) {
-  const stagesContainer = document.getElementById(`stages-container-${dayIndex}`);
-  
-  // Container spese
-  const speseContainer = document.createElement("div");
-  speseContainer.className = "spese-container";
-  
-  const speseHeader = document.createElement("div");
-  speseHeader.className = "spese-header";
-  speseHeader.textContent = "💰 Spese per questa tappa";
-  speseContainer.appendChild(speseHeader);
-
-  // Mostra spese esistenti
-  if (stage.spese && stage.spese.length > 0) {
-    stage.spese.forEach(spesa => {
-      const speseItem = document.createElement("div");
-      speseItem.className = "spesa-item";
-      speseItem.innerHTML = `
-        <div class="spesa-info">
-          <span class="spesa-type">${spesa.tipologia}</span> - 
-          <span class="spesa-amount">€${parseFloat(spesa.costo).toFixed(2)}</span>
-          ${spesa.descrizione ? `<span class="spesa-desc">${spesa.descrizione}</span>` : ''}
-        </div>
-        <button type="button" class="btn-small btn-spesa-delete" onclick="deleteSpesa(${dayIndex}, ${stageIndex}, ${spesa.id})">Elimina</button>
-      `;
-      speseContainer.appendChild(speseItem);
-    });
-  }
-
-  // Form aggiunta spesa
-  const addSpeseDiv = document.createElement("div");
-  addSpeseDiv.className = "add-spesa-box";
-
-  let speseTypeOptions = '<option value="">Seleziona tipo...</option>';
-  Object.entries(SPESA_TYPES).forEach(([key, val]) => {
-    speseTypeOptions += `<option value="${val}">${val}</option>`;
-  });
-
-  addSpeseDiv.innerHTML = `
-    <div class="spesa-input-row">
-      <select id="spesa-type-${dayIndex}-${stageIndex}" class="spesa-select">
-        ${speseTypeOptions}
-      </select>
-      <input type="number" id="spesa-costo-${dayIndex}-${stageIndex}" class="spesa-cost-input" placeholder="€ Costo" step="0.01" min="0">
-    </div>
-    <input type="text" id="spesa-desc-${dayIndex}-${stageIndex}" class="spesa-desc-input" placeholder="Descrizione (opzionale)">
-    <button type="button" class="btn-spesa" onclick="addSpesa(${dayIndex}, ${stageIndex})">+ Aggiungi Spesa</button>
-  `;
-
-  speseContainer.appendChild(addSpeseDiv);
-  stagesContainer.appendChild(speseContainer);
-}
-
-function addSpesa(dayIndex, stageIndex) {
-  if (!currentTrip || !currentTrip.days[dayIndex] || !currentTrip.days[dayIndex].stages[stageIndex]) return;
-
-  const stage = currentTrip.days[dayIndex].stages[stageIndex];
-
-  const typeSelect = document.getElementById(`spesa-type-${dayIndex}-${stageIndex}`);
-  const costoInput = document.getElementById(`spesa-costo-${dayIndex}-${stageIndex}`);
-  const descInput = document.getElementById(`spesa-desc-${dayIndex}-${stageIndex}`);
-
-  const tipo = typeSelect.value.trim();
-  const costo = costoInput.value.trim();
-  const desc = descInput.value.trim();
-
-  if (!tipo || !costo) {
-    alert("Inserisci tipo e costo della spesa");
-    return;
-  }
-
-  // Inizializza array spese se non esiste
-  if (!stage.spese) {
-    stage.spese = [];
-  }
-
-  stage.spese.push({
-    id: Date.now(),
-    tipologia: tipo,
-    costo: parseFloat(costo),
-    descrizione: desc
-  });
-
-  typeSelect.value = "";
-  costoInput.value = "";
-  descInput.value = "";
-
-  renderStages(dayIndex);
-  showToast("✅ Spesa aggiunta!", "success");
-}
-
-function deleteSpesa(dayIndex, stageIndex, speseId) {
-  if (!currentTrip || !currentTrip.days[dayIndex] || !currentTrip.days[dayIndex].stages[stageIndex]) return;
-
-  const stage = currentTrip.days[dayIndex].stages[stageIndex];
-
-  if (stage.spese) {
-    stage.spese = stage.spese.filter(s => s.id !== speseId);
-    renderStages(dayIndex);
-    showToast("❌ Spesa eliminata", "warning");
-  }
-}
-
-// FUNZIONE AGGIUNTA: Renderizza i singoli giorni all'interno del modale
 function renderDay(day, index) {
   const dayCard = document.createElement("div");
   dayCard.className = "day-card";
 
-  // Formatta la data per renderla leggibile (DD/MM/YYYY)
+  // Formatta la data (DD/MM/YYYY)
   let formattedDate = "";
   if (day.date) {
     const d = new Date(day.date);
-    formattedDate = !isNaN(d) ? ` - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}` : "";
+    formattedDate = !isNaN(d)
+      ? ` - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`
+      : "";
   }
 
   dayCard.innerHTML = `
@@ -429,7 +529,7 @@ function renderDay(day, index) {
     <div class="form-group">
       <label style="font-weight: 700; margin-top: 0.8rem;">Tappe della giornata</label>
       <div id="stages-container-${index}" class="stages-container"></div>
-      
+
       <div class="new-stage-box">
         <p class="new-stage-title">➕ Aggiungi una nuova tappa</p>
         <input type="text" id="stage-title-${index}" class="stage-input" placeholder="Titolo tappa (es. Colazione, Museo, Cena...)" style="margin-bottom: 0.8rem;">
@@ -439,7 +539,7 @@ function renderDay(day, index) {
     </div>
   `;
 
-  // Ascolta i cambiamenti sul titolo del giorno e aggiorna lo stato in tempo reale
+  // Aggiorna il titolo del giorno in tempo reale
   const input = dayCard.querySelector(".day-title-input");
   input.addEventListener("input", (e) => {
     if (currentTrip && currentTrip.days[index]) {
@@ -447,7 +547,7 @@ function renderDay(day, index) {
     }
   });
 
-  // Permetti di aggiungere una tappa premendo Ctrl+Enter sulla descrizione
+  // Ctrl+Enter per aggiungere tappa
   const stageDescInput = dayCard.querySelector(`#stage-desc-${index}`);
   stageDescInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter" && e.ctrlKey) {
@@ -458,11 +558,10 @@ function renderDay(day, index) {
 
   daysContainer.appendChild(dayCard);
 
-  // Renderizza le tappe già esistenti
   renderStages(index);
 }
 
-// ================= RENDER =================
+// ================= RENDER LISTA VIAGGI =================
 
 function renderTrips() {
   draftContainer.innerHTML = "";
@@ -472,92 +571,264 @@ function renderTrips() {
     const card = document.createElement("div");
     card.className = "trip-card";
 
-    // Gestione dinamica dei badge neo-brutalisti in base allo stato
     const badgeClass = trip.status === "DRAFT" ? "badge-draft" : "badge-published";
     const badgeText = trip.status === "DRAFT" ? "Bozza" : "Pubblicato";
 
-    // Calcola budget totale da tutte le spese
-    let budgetTotale = 0;
-    trip.days?.forEach(day => {
-      day.stages?.forEach(stage => {
-        stage.spese?.forEach(spesa => {
-          budgetTotale += parseFloat(spesa.costo) || 0;
-        });
-      });
-    });
+    const budget = parseFloat(trip.budgetPianificato);
+    const budgetText = !isNaN(budget) && budget > 0
+      ? `<p style="font-size: 0.85rem; color: #ff6b35; font-weight: 700; margin-bottom: 0.5rem;">💰 Budget: €${budget.toFixed(2)}</p>`
+      : '';
+
+    const destText = trip.destination
+      ? `<p style="font-size: 0.9rem; color: var(--primary); font-weight: 700;">📍 ${trip.destination}</p>`
+      : '';
 
     card.innerHTML = `
       <span class="status-badge ${badgeClass}">${badgeText}</span>
       <h3 class="trip-title">${trip.title || "Senza titolo"}</h3>
+      ${destText}
       <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 0.5rem;">
         ${trip.startDate ? trip.startDate.split('-').reverse().join('/') : '---'} ➔ ${trip.endDate ? trip.endDate.split('-').reverse().join('/') : '---'}
       </p>
-      ${budgetTotale > 0 ? `
-        <p style="font-size: 0.85rem; color: #ff6b35; font-weight: 700; margin-bottom: 0.8rem;">
-          💰 Budget: €${budgetTotale.toFixed(2)}
-        </p>
-      ` : ''}
+      ${budgetText}
 
       <div class="trip-actions">
         <button class="btn-primary open-btn">Apri</button>
         <button class="btn-danger del-btn">Elimina</button>
         <button class="btn-secondary pdf-btn">PDF</button>
+        <button class="btn-spese-manage spese-btn">Gestione Spese</button>
       </div>
     `;
 
     const openBtn = card.querySelector(".open-btn");
     const delBtn = card.querySelector(".del-btn");
     const pdfBtn = card.querySelector(".pdf-btn");
+    const speseBtn = card.querySelector(".spese-btn");
 
     openBtn.onclick = () => openModal(trip);
 
     delBtn.onclick = () => {
-      trips = trips.filter(t => t.id !== trip.id);
-      localStorage.setItem("trips", JSON.stringify(trips));
-      renderTrips();
+      if (confirm("Sei sicuro di voler eliminare questo itinerario?")) {
+        trips = trips.filter(t => t.id !== trip.id);
+        localStorage.setItem("trips", JSON.stringify(trips));
+        renderTrips();
+      }
     };
 
     pdfBtn.onclick = () => exportTripToPDF(trip);
+
+    speseBtn.onclick = () => openSpeseModal(trip);
 
     if (trip.status === "DRAFT") draftContainer.appendChild(card);
     else publishedContainer.appendChild(card);
   });
 }
 
+// ================= MODALE GESTIONE SPESE EXTRA =================
+
+function openSpeseModal(trip) {
+  speseTripRef = trip;
+
+  // Assicura che l'array esista (per itinerari vecchi)
+  if (!speseTripRef.speseExtra) speseTripRef.speseExtra = [];
+
+  speseModalSubtitle.textContent = `Spese extra di "${trip.title || 'Senza titolo'}"`;
+
+  // Pulisci il form
+  speseExtraNome.value = "";
+  speseExtraTipo.value = "";
+  speseExtraCosto.value = "";
+
+  renderSpeseExtra();
+  speseModal.classList.remove("hidden");
+}
+
+function closeSpeseModal() {
+  speseModal.classList.add("hidden");
+  speseTripRef = null;
+}
+
+closeSpeseModalBtn.addEventListener("click", closeSpeseModal);
+
+speseModal.addEventListener("click", (e) => {
+  if (e.target === speseModal) closeSpeseModal();
+});
+
+function renderSpeseExtra() {
+  if (!speseTripRef) return;
+
+  speseExtraList.innerHTML = "";
+
+  const spese = speseTripRef.speseExtra || [];
+
+  if (spese.length === 0) {
+    speseExtraList.innerHTML = `<div class="spese-extra-empty">Nessuna spesa extra registrata. Aggiungine una qui sotto!</div>`;
+    speseExtraTotal.innerHTML = "";
+    return;
+  }
+
+  let totale = 0;
+
+  spese.forEach(spesa => {
+    totale += parseFloat(spesa.costo) || 0;
+
+    const item = document.createElement("div");
+    item.className = "spesa-extra-item";
+    item.innerHTML = `
+      <div class="spesa-extra-info">
+        <span class="spesa-extra-nome">${spesa.nome}</span>
+        <span class="spesa-extra-badge">${spesa.tipologia}</span>
+      </div>
+      <span class="spesa-extra-costo">€${parseFloat(spesa.costo).toFixed(2)}</span>
+      <button type="button" class="btn-small" onclick="deleteSpesaExtra(${spesa.id})">Elimina</button>
+    `;
+    speseExtraList.appendChild(item);
+  });
+
+  speseExtraTotal.innerHTML = `<span>TOTALE SPESE EXTRA</span><span>€${totale.toFixed(2)}</span>`;
+}
+
+addSpeseExtraBtn.addEventListener("click", () => {
+  if (!speseTripRef) return;
+
+  const nome = speseExtraNome.value.trim();
+  const tipo = speseExtraTipo.value.trim();
+  const costo = speseExtraCosto.value.trim();
+
+  if (!nome) {
+    showToast("⚠️ Inserisci il nome della spesa", "warning");
+    return;
+  }
+  if (!tipo) {
+    showToast("⚠️ Seleziona una tipologia", "warning");
+    return;
+  }
+  if (!costo || parseFloat(costo) <= 0) {
+    showToast("⚠️ Inserisci un costo valido", "warning");
+    return;
+  }
+
+  if (!speseTripRef.speseExtra) speseTripRef.speseExtra = [];
+
+  speseTripRef.speseExtra.push({
+    id: Date.now(),
+    nome: nome,
+    tipologia: tipo,
+    costo: parseFloat(costo)
+  });
+
+  // Pulisci il form
+  speseExtraNome.value = "";
+  speseExtraTipo.value = "";
+  speseExtraCosto.value = "";
+
+  renderSpeseExtra();
+  showToast("✅ Spesa aggiunta", "success");
+});
+
+function deleteSpesaExtra(spesaId) {
+  if (!speseTripRef || !speseTripRef.speseExtra) return;
+
+  speseTripRef.speseExtra = speseTripRef.speseExtra.filter(s => s.id !== spesaId);
+  renderSpeseExtra();
+  showToast("❌ Spesa eliminata", "warning");
+}
+
+// Salva le spese extra nel localStorage
+saveSpeseBtn.addEventListener("click", () => {
+  if (!speseTripRef) return;
+
+  const index = trips.findIndex(t => t.id === speseTripRef.id);
+  if (index >= 0) trips[index] = speseTripRef;
+
+  localStorage.setItem("trips", JSON.stringify(trips));
+
+  // QUI in futuro: invio al backend delle spese collegate all'itinerario
+  // inviaSpeseAlBackend(speseTripRef.id, speseTripRef.speseExtra);
+
+  closeSpeseModal();
+  showToast("💾 Spese salvate", "success");
+});
+
+// ================= TOAST =================
+
+function showToast(message, type = "info") {
+  const toast = document.createElement("div");
+  let bgColor = "#1a4d5c";
+  if (type === "error") bgColor = "#ff4d4d";
+  if (type === "success") bgColor = "#4caf50";
+  if (type === "warning") bgColor = "#ff9800";
+
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: ${bgColor};
+    color: white;
+    padding: 1rem 1.5rem;
+    border: 3px solid #000;
+    border-radius: 0;
+    box-shadow: 4px 4px 0 #000;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+  `;
+
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = "slideOut 0.3s ease forwards";
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Animazioni toast (iniettate una sola volta)
+const toastStyle = document.createElement("style");
+toastStyle.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
+  }
+`;
+document.head.appendChild(toastStyle);
+
 // ================= PDF =================
+// NOTA: il PDF include destinazione, date, programma giornaliero, tappe.
+// NON include i costi trasporti/alloggi ne' le spese extra (per scelta).
 
 function exportTripToPDF(trip) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // ===== PALETTE NEW BRUTALISM (RGB) =====
   const COLORS = {
-    primary: [26, 77, 92],      // #1a4d5c blu marino
-    accent: [255, 107, 53],     // #ff6b35 arancione
-    highlight: [255, 214, 10],  // #ffd60a giallo
-    dark: [0, 0, 0],            // nero
-    white: [255, 255, 255],     // bianco
-    light: [248, 248, 248],     // grigio chiaro
-    gray: [107, 114, 128]       // grigio
+    primary: [26, 77, 92],
+    accent: [255, 107, 53],
+    highlight: [255, 214, 10],
+    dark: [0, 0, 0],
+    white: [255, 255, 255],
+    light: [248, 248, 248],
+    gray: [107, 114, 128]
   };
 
   const PAGE_WIDTH = 210;
   const MARGIN = 15;
   const CONTENT_WIDTH = PAGE_WIDTH - (MARGIN * 2);
 
-  // ===== HELPER: Box con ombra brutalist =====
   function drawBrutalBox(x, y, w, h, fillColor, shadowOffset = 2) {
-    // Ombra (rettangolo nero spostato)
     doc.setFillColor(...COLORS.dark);
     doc.rect(x + shadowOffset, y + shadowOffset, w, h, 'F');
-    // Box principale
     doc.setFillColor(...fillColor);
     doc.setDrawColor(...COLORS.dark);
     doc.setLineWidth(0.8);
     doc.rect(x, y, w, h, 'FD');
   }
 
-  // ===== HELPER: Controlla spazio pagina =====
   function checkPageSpace(yPos, needed = 20) {
     if (yPos + needed > 280) {
       doc.addPage();
@@ -566,21 +837,9 @@ function exportTripToPDF(trip) {
     return yPos;
   }
 
-  // Calcola budget totale
-  let budgetTotale = 0;
-  trip.days?.forEach(day => {
-    day.stages?.forEach(stage => {
-      stage.spese?.forEach(spesa => {
-        budgetTotale += parseFloat(spesa.costo) || 0;
-      });
-    });
-  });
-
   // ============ HEADER ============
-  // Box header blu marino
   drawBrutalBox(MARGIN, 15, CONTENT_WIDTH, 35, COLORS.primary, 3);
 
-  // Logo TravelBuddy
   doc.setFont("Helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(...COLORS.white);
@@ -588,7 +847,6 @@ function exportTripToPDF(trip) {
   doc.setTextColor(...COLORS.accent);
   doc.text("BUDDY", MARGIN + 30, 26);
 
-  // Titolo viaggio
   doc.setFontSize(20);
   doc.setTextColor(...COLORS.white);
   const titolo = trip.title || "Itinerario Senza Titolo";
@@ -597,28 +855,31 @@ function exportTripToPDF(trip) {
 
   let yOffset = 60;
 
-  // ============ INFO BADGES ============
-  // Badge Stato
+  // ============ DESTINAZIONE ============
+  if (trip.destination) {
+    drawBrutalBox(MARGIN, yOffset, CONTENT_WIDTH, 12, COLORS.accent);
+    doc.setFont("Helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...COLORS.white);
+    doc.text(`DESTINAZIONE: ${trip.destination}`, MARGIN + 6, yOffset + 8);
+    yOffset += 20;
+  }
+
+  // ============ BADGES STATO / VISIBILITA ============
   const statoText = trip.status === "DRAFT" ? "BOZZA" : "PUBBLICATO";
   const statoColor = trip.status === "DRAFT" ? COLORS.highlight : COLORS.primary;
   const statoTextColor = trip.status === "DRAFT" ? COLORS.dark : COLORS.white;
-  
-  drawBrutalBox(MARGIN, yOffset, 45, 12, statoColor);
+
+  drawBrutalBox(MARGIN, yOffset, 60, 12, statoColor);
   doc.setFont("Helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(...statoTextColor);
-  doc.text(statoText, MARGIN + 5, yOffset + 8);
+  doc.text(statoText, MARGIN + 6, yOffset + 8);
 
-  // Badge Visibilità
   const visText = trip.visibility === "PUBLIC" ? "PUBBLICO" : "PRIVATO";
-  drawBrutalBox(MARGIN + 52, yOffset, 45, 12, COLORS.accent);
+  drawBrutalBox(MARGIN + 67, yOffset, 60, 12, COLORS.accent);
   doc.setTextColor(...COLORS.white);
-  doc.text(visText, MARGIN + 57, yOffset + 8);
-
-  // Badge Budget
-  drawBrutalBox(MARGIN + 104, yOffset, 75, 12, COLORS.highlight);
-  doc.setTextColor(...COLORS.dark);
-  doc.text(`BUDGET: EUR ${budgetTotale.toFixed(2)}`, MARGIN + 109, yOffset + 8);
+  doc.text(visText, MARGIN + 73, yOffset + 8);
 
   yOffset += 22;
 
@@ -635,14 +896,11 @@ function exportTripToPDF(trip) {
 
   // ============ PROGRAMMA GIORNALIERO ============
   if (trip.days && trip.days.length > 0) {
-    
-    // Titolo sezione
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(14);
     doc.setTextColor(...COLORS.dark);
     doc.text("PROGRAMMA GIORNALIERO", MARGIN, yOffset);
-    
-    // Linea accent sotto il titolo
+
     doc.setFillColor(...COLORS.accent);
     doc.rect(MARGIN, yOffset + 2, 80, 2, 'F');
     yOffset += 12;
@@ -650,21 +908,19 @@ function exportTripToPDF(trip) {
     trip.days.forEach((day, idx) => {
       yOffset = checkPageSpace(yOffset, 25);
 
-      // ===== HEADER GIORNO =====
       const dateFormatted = day.date ? day.date.split('-').reverse().join('/') : '';
       drawBrutalBox(MARGIN, yOffset, CONTENT_WIDTH, 13, COLORS.primary);
       doc.setFont("Helvetica", "bold");
       doc.setFontSize(11);
       doc.setTextColor(...COLORS.white);
       doc.text(`GIORNO ${idx + 1}`, MARGIN + 5, yOffset + 8.5);
-      
+
       if (dateFormatted) {
         doc.setFontSize(9);
         doc.setTextColor(...COLORS.highlight);
         doc.text(dateFormatted, MARGIN + 35, yOffset + 8.5);
       }
 
-      // Titolo del giorno (a destra)
       if (day.title) {
         doc.setFont("Helvetica", "normal");
         doc.setFontSize(9);
@@ -675,23 +931,19 @@ function exportTripToPDF(trip) {
 
       yOffset += 18;
 
-      // ===== TAPPE =====
       if (day.stages && day.stages.length > 0) {
         day.stages.forEach(stage => {
           yOffset = checkPageSpace(yOffset, 20);
 
-          // Box tappa con accent arancione a sinistra
           doc.setFillColor(...COLORS.accent);
           doc.rect(MARGIN + 3, yOffset, 3, 10, 'F');
 
-          // Titolo tappa
           doc.setFont("Helvetica", "bold");
           doc.setFontSize(10);
           doc.setTextColor(...COLORS.dark);
           doc.text(stage.title, MARGIN + 10, yOffset + 7);
           yOffset += 11;
 
-          // Descrizione tappa
           if (stage.description) {
             doc.setFont("Helvetica", "italic");
             doc.setFontSize(9);
@@ -705,47 +957,9 @@ function exportTripToPDF(trip) {
             yOffset += 2;
           }
 
-          // ===== SPESE =====
-          if (stage.spese && stage.spese.length > 0) {
-            // Calcola altezza box spese
-            const speseHeight = 8 + (stage.spese.length * 6);
-            yOffset = checkPageSpace(yOffset, speseHeight + 5);
-
-            // Box spese giallo chiaro
-            drawBrutalBox(MARGIN + 10, yOffset, CONTENT_WIDTH - 20, speseHeight, [255, 248, 220]);
-
-            // Header spese
-            doc.setFont("Helvetica", "bold");
-            doc.setFontSize(8);
-            doc.setTextColor(...COLORS.accent);
-            doc.text("SPESE", MARGIN + 14, yOffset + 6);
-
-            let speseY = yOffset + 12;
-            stage.spese.forEach(spesa => {
-              doc.setFont("Helvetica", "bold");
-              doc.setFontSize(8);
-              doc.setTextColor(...COLORS.primary);
-              doc.text(`${spesa.tipologia}:`, MARGIN + 14, speseY);
-              
-              doc.setTextColor(...COLORS.accent);
-              doc.text(`EUR ${parseFloat(spesa.costo).toFixed(2)}`, MARGIN + 45, speseY);
-              
-              if (spesa.descrizione) {
-                doc.setFont("Helvetica", "normal");
-                doc.setTextColor(...COLORS.gray);
-                const descTrunc = spesa.descrizione.length > 50 ? spesa.descrizione.substring(0, 50) + "..." : spesa.descrizione;
-                doc.text(`- ${descTrunc}`, MARGIN + 75, speseY);
-              }
-              speseY += 6;
-            });
-
-            yOffset += speseHeight + 4;
-          }
-
           yOffset += 4;
         });
       } else {
-        // Nessuna tappa
         doc.setFont("Helvetica", "italic");
         doc.setFontSize(9);
         doc.setTextColor(...COLORS.gray);
@@ -763,21 +977,16 @@ function exportTripToPDF(trip) {
     doc.text("Nessun giorno generato nell'itinerario.", MARGIN + 6, yOffset + 12);
   }
 
-  // ============ FOOTER su ogni pagina ============
+  // ============ FOOTER ============
   const pageCount = doc.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    
-    // Linea footer accent
     doc.setFillColor(...COLORS.accent);
     doc.rect(0, 287, PAGE_WIDTH, 3, 'F');
-    
-    // Testo footer
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(8);
     doc.setTextColor(...COLORS.primary);
     doc.text("TravelBuddy", MARGIN, 295);
-    
     doc.setFont("Helvetica", "normal");
     doc.setTextColor(...COLORS.gray);
     doc.text(`Pagina ${i} di ${pageCount}`, PAGE_WIDTH - MARGIN - 25, 295);
