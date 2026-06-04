@@ -90,19 +90,6 @@
       <input id="tripBudget" type="number" step="0.01" min="0" placeholder="0.00">
     </div>
 
-    <!-- NUOVI CAMPI COSTI OBBLIGATORI -->
-    <div class="dates-grid">
-      <div class="form-group">
-        <label>Costo Trasporti (€) *</label>
-        <input id="tripTransport" type="number" step="0.01" min="0" placeholder="Voli, treni, bus...">
-      </div>
-
-      <div class="form-group">
-        <label>Costo Alloggi (€) *</label>
-        <input id="tripLodging" type="number" step="0.01" min="0" placeholder="Hotel, ostelli, B&B...">
-      </div>
-    </div>
-
     <button id="generateDaysBtn" class="btn-secondary" style="margin-top: 1rem;">Genera / Aggiorna giorni</button>
 
     <div id="daysContainer" class="days-container"></div>
@@ -115,14 +102,14 @@
   </div>
 </div>
 
-<!-- ============ MODALE GESTIONE SPESE EXTRA ============ -->
+<!-- ============ MODALE GESTIONE SPESE ============ -->
 <div id="speseModal" class="modal hidden">
   <div id="speseModalContent" class="modal-content">
 
     <button id="closeSpeseModalBtn" class="modal-close">✕</button>
 
     <h2>Gestione Spese</h2>
-    <p class="page-subtitle" id="speseModalSubtitle">Spese extra dell'itinerario</p>
+    <p class="page-subtitle" id="speseModalSubtitle">Spese dell'itinerario</p>
 
     <!-- Lista spese esistenti -->
     <div id="speseExtraList" class="spese-extra-list"></div>
@@ -136,7 +123,7 @@
 
       <div class="form-group">
         <label>Nome spesa</label>
-        <input type="text" id="speseExtraNome" class="spesa-desc-input" placeholder="Es. Pranzo al ristorante">
+        <input type="text" id="speseExtraNome" class="spesa-desc-input" placeholder="Es. Volo Roma-Tokyo, Hotel centro, Pranzo...">
       </div>
 
       <div class="spesa-input-row" style="margin-top: 0.8rem;">
