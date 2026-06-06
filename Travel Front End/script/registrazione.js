@@ -16,10 +16,11 @@ let validationState = {
   nome: false,
   cognome: false,
   nickname: false,
-  eta: false,
   email: false,
+  eta: false,
   password: false,
-  termini: false
+  // ✅ MODIFICA 1: rimosso "termini" — era commentato qui ma scritto
+  // dinamicamente da validateCheckbox(), causando comportamento imprevedibile
 };
 
 // ================= EVENT LISTENERS =================
@@ -31,61 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
   ageInput.addEventListener('input', validateAge);
   emailInput.addEventListener('input', validateEmail);
   passwordInput.addEventListener('input', validatePassword);
-  checkboxInput.addEventListener('change', validateCheckbox);
-  
+  // ✅ MODIFICA 2: rimosso listener sulla checkbox — non è parte della validazione
+  // checkboxInput.addEventListener('change', validateCheckbox);
+
   form.addEventListener('submit', handleFormSubmit);
-  
-  // Disattiva il bottone al caricamento
+
   updateButtonState();
-  
+
   console.log('✅ Form validation inizializzato');
 });
-
-
-  const UrlRegistrazione = "http://localhost:8080/api/v1/guest/registrazione";
-  
-  const datiUtente = {
-    nome: nameInput.value.trim(),
-    cognome: surnameInput.value.trim(),
-    nickname: nicknameInput.value.trim(),
-    email : emailInput.value.trim(),
-    eta: parseInt(emailInput.value.trim()),
-    password: passwordInput.value.trim(),
-  }
-
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(datiUtente)
-  }
-
-  async function registrazioneUtente() {
-    try{
-      const response = await fetch(UrlRegistrazione, requestOptions);
-      if (!response.ok) {
-      throw new Error('Errore nella richiesta');
-      }
-      const data = await response.json();
-      console.log('Risposta del server:');
-      console.log(data);
-    }catch(error) {
-console.log('Errore:');
-console.error(error);
-}
-  }
-
-  registrazioneUtente();
-  
 
 
 // ================= VALIDATION FUNCTIONS =================
 
 function validateName() {
   const value = nameInput.value.trim();
-  
+
   if (value.length > 0 && value.length <= 128) {
     validationState.nome = true;
     removeError(nameInput);
@@ -97,13 +59,13 @@ function validateName() {
       showError(nameInput, 'Il nome deve avere massimo 128 caratteri');
     }
   }
-  
+
   updateButtonState();
 }
 
 function validateSurname() {
   const value = surnameInput.value.trim();
-  
+
   if (value.length > 0 && value.length <= 128) {
     validationState.cognome = true;
     removeError(surnameInput);
@@ -115,13 +77,13 @@ function validateSurname() {
       showError(surnameInput, 'Il cognome deve avere massimo 128 caratteri');
     }
   }
-  
+
   updateButtonState();
 }
 
 function validateNickname() {
   const value = nicknameInput.value.trim();
-  
+
   if (value.length >= 3 && value.length <= 50) {
     validationState.nickname = true;
     removeError(nicknameInput);
@@ -135,50 +97,50 @@ function validateNickname() {
       showError(nicknameInput, 'Il nickname deve avere massimo 50 caratteri');
     }
   }
-  
+
   updateButtonState();
 }
 
 function validateAge() {
   const value = parseInt(ageInput.value);
-  
+
   if (!isNaN(value) && value >= 18 && value <= 120) {
     validationState.eta = true;
     removeError(ageInput);
   } else {
     validationState.eta = false;
     if (ageInput.value === '' || isNaN(value)) {
-      showError(ageInput, 'L\'età è obbligatoria');
+      showError(ageInput, "L'età è obbligatoria");
     } else {
       showError(ageInput, 'Devi avere almeno 18 anni');
     }
   }
-  
+
   updateButtonState();
 }
 
 function validateEmail() {
   const value = emailInput.value.trim();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
   if (emailRegex.test(value)) {
     validationState.email = true;
     removeError(emailInput);
   } else {
     validationState.email = false;
     if (value === '') {
-      showError(emailInput, 'L\'email è obbligatoria');
+      showError(emailInput, "L'email è obbligatoria");
     } else {
       showError(emailInput, 'Inserisci un email valido (es: user@domain.com)');
     }
   }
-  
+
   updateButtonState();
 }
 
 function validatePassword() {
   const value = passwordInput.value;
-  
+
   if (value.length >= 6 && value.length <= 20) {
     validationState.password = true;
     removeError(passwordInput);
@@ -192,30 +154,22 @@ function validatePassword() {
       showError(passwordInput, 'La password deve avere massimo 20 caratteri');
     }
   }
-  
+
   updateButtonState();
 }
 
-function validateCheckbox() {
-  if (checkboxInput.checked) {
-    validationState.termini = true;
-    removeError(checkboxInput);
-  } else {
-    validationState.termini = false;
-    showError(checkboxInput, 'Devi accettare i termini e condizioni');
-  }
-  
-  updateButtonState();
-}
+// ✅ MODIFICA 3: rimossa la funzione validateCheckbox() interamente —
+// scriveva validationState.termini dinamicamente anche se non era
+// dichiarato nel validationState, inquinando Object.values()
 
 // ================= UPDATE BUTTON STATE =================
 
 function updateButtonState() {
   const isFormValid = Object.values(validationState).every(value => value === true);
-  
+
   console.log('Validation State:', validationState);
   console.log('Form Valid:', isFormValid);
-  
+
   if (isFormValid) {
     submitBtn.disabled = false;
     submitBtn.style.opacity = '1';
@@ -233,7 +187,7 @@ function updateButtonState() {
 
 function showError(input, message) {
   removeError(input);
-  
+
   const errorEl = document.createElement('span');
   errorEl.className = 'error-message';
   errorEl.textContent = '❌ ' + message;
@@ -244,10 +198,10 @@ function showError(input, message) {
     margin-top: 0.3rem;
     display: block;
   `;
-  
+
   input.style.borderColor = '#ff4d4d';
   input.style.boxShadow = '3px 3px 0 #ff4d4d';
-  
+
   input.parentElement.appendChild(errorEl);
 }
 
@@ -256,7 +210,7 @@ function removeError(input) {
   if (errorEl) {
     errorEl.remove();
   }
-  
+
   input.style.borderColor = '';
   input.style.boxShadow = '';
 }
@@ -265,128 +219,93 @@ function removeError(input) {
 
 async function handleFormSubmit(e) {
   e.preventDefault();
-  
-  // Validazione finale
+
   validateName();
   validateSurname();
   validateNickname();
   validateAge();
   validateEmail();
   validatePassword();
-  validateCheckbox();
-  
+  // ✅ MODIFICA 4: rimossa chiamata a validateCheckbox() — non esiste più
+
   const isFormValid = Object.values(validationState).every(value => value === true);
-  
+
   if (!isFormValid) {
     showNotification('Per favore, compila tutti i campi correttamente', 'error');
     return;
   }
-  
-  // Raccogli i dati del form
+
   const userData = {
-    nome: nameInput.value.trim(),
-    cognome: surnameInput.value.trim(),
+    nome:     nameInput.value.trim(),
+    cognome:  surnameInput.value.trim(),
     nickname: nicknameInput.value.trim(),
-    eta: parseInt(ageInput.value),
-    email: emailInput.value.trim(),
+    email:    emailInput.value.trim(),
+    eta:      parseInt(ageInput.value),
     password: passwordInput.value,
-    dataRegistrazione: new Date().toISOString()
   };
-  
+
   console.log('📤 Invio dati:', userData);
-  
-  // Mostra loading
+
   submitBtn.disabled = true;
   submitBtn.textContent = '⏳ Registrazione in corso...';
-  
+
   try {
-    // Invia i dati al backend Spring Boot
-    const response = await fetch('http://localhost:8080/api/auth/register', {
+    const response = await fetch('http://localhost:8080/api/v1/guest/registrazione', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(userData)
     });
-    
+
     if (response.ok) {
-      const data = await response.json();
+      // ✅ MODIFICA 5: rimossa la lettura di data.token — la registrazione
+      // restituisce l'Utente creato, non un token JWT. Il token si ottiene
+      // solo dopo il login. Rimosso anche il salvataggio in localStorage.
       showNotification('Registrazione completata! Benvenuto su TravelBuddy! 🎉', 'success');
-      
-      // Salva token se fornito
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
-      }
-      
-      // Salva dati utente
-      localStorage.setItem('currentUser', JSON.stringify(userData));
-      
-      // Redirect dopo 2 secondi
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'login.html'; // ✅ MODIFICA 6: redirect al login, non alla dashboard
       }, 2000);
-    } else {
-      // Gestisci errori dal backend
+
+    } else if (response.status === 409) {
+      // ✅ MODIFICA 7: gestione esplicita per email/nickname duplicati
       const errorData = await response.json();
-      showNotification(errorData.message || 'Errore durante la registrazione', 'error');
+      showNotification(errorData.message || 'Email o nickname già in uso', 'error');
       resetButton();
-    }
-  } catch (error) {
-    console.error('Errore:', error);
-    
-    // FALLBACK: Se il backend non è disponibile, salva in localStorage (provvisorio)
-    if (error.message.includes('Failed to fetch') || error.code === 'ECONNREFUSED') {
-      console.log('⚠️ Backend non disponibile, salvo in localStorage');
-      saveUserLocally(userData);
-      showNotification('Backend non disponibile. Dati salvati localmente. ✅', 'warning');
-      
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 2000);
+
+    } else if (response.status === 400) {
+      // Validazione @Valid fallita — il GlobalExceptionHandler restituisce
+      // una mappa { campo: messaggio }
+      const errorData = await response.json();
+      showNotification('Dati non validi. Controlla i campi.', 'error');
+      console.error('Errori validazione:', errorData);
+      resetButton();
+
     } else {
-      showNotification('Errore di connessione. Riprova più tardi.', 'error');
+      showNotification('Errore durante la registrazione', 'error');
       resetButton();
     }
-  }
-}
 
-// ================= FALLBACK: SAVE LOCALLY =================
-
-function saveUserLocally(userData) {
-  const users = JSON.parse(localStorage.getItem('users')) || [];
-  
-  // Controlla se l'email esiste già
-  const userExists = users.some(user => user.email === userData.email);
-  if (userExists) {
-    showNotification('Questo email è già registrato!', 'error');
+  } catch (error) {
+    // ✅ MODIFICA 8: rimosso il fallback saveUserLocally — se il server
+    // non risponde, l'utente non è registrato nel DB. Fingere il contrario
+    // è scorretto. Si mostra semplicemente un errore.
+    console.error('Errore di rete:', error);
+    showNotification('Impossibile contattare il server. Riprova più tardi.', 'error');
     resetButton();
-    return false;
   }
-  
-  // Aggiungi nuovo utente
-  users.push({
-    ...userData,
-    id: Date.now(),
-    password: btoa(userData.password) // Encoding semplice (NON usare in produzione!)
-  });
-  
-  localStorage.setItem('users', JSON.stringify(users));
-  localStorage.setItem('currentUser', JSON.stringify(userData));
-  
-  console.log('💾 Utente salvato in localStorage');
-  return true;
 }
 
 // ================= NOTIFICATION SYSTEM =================
 
 function showNotification(message, type = 'info') {
   const notification = document.createElement('div');
-  
-  let bgColor = '#1a4d5c'; // default
+
+  let bgColor = '#1a4d5c';
   if (type === 'error') bgColor = '#ff4d4d';
   if (type === 'success') bgColor = '#4caf50';
   if (type === 'warning') bgColor = '#ff9800';
-  
+
   notification.style.cssText = `
     position: fixed;
     bottom: 2rem;
@@ -403,39 +322,25 @@ function showNotification(message, type = 'info') {
     animation: slideIn 0.3s ease;
     max-width: 400px;
   `;
-  
+
   notification.textContent = message;
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.style.animation = 'slideOut 0.3s ease forwards';
     setTimeout(() => notification.remove(), 300);
   }, 4000);
 }
 
-// Aggiungi animazioni CSS
 const style = document.createElement('style');
 style.textContent = `
   @keyframes slideIn {
-    from {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
+    from { transform: translateX(400px); opacity: 0; }
+    to   { transform: translateX(0);     opacity: 1; }
   }
-  
   @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(400px);
-      opacity: 0;
-    }
+    from { transform: translateX(0);     opacity: 1; }
+    to   { transform: translateX(400px); opacity: 0; }
   }
 `;
 document.head.appendChild(style);
@@ -449,50 +354,4 @@ function resetButton() {
 }
 
 console.log('✅ Form validation script caricato');
-console.log('🔧 Backend endpoint: http://localhost:8080/api/auth/register');
-
-// =============FETCH API===================
-
-//Invia tutti i dati dell'utente che si registra (nome, cognome, nickname ecc). Dati JSON dell'utente.
-//Creare oggetto javascript in cui inserisco i dati raccolti dagli input del form. 
-
-
-
-
-
-
-
-// const postData = {
-// titolo: 'JavaScript',
-// autore: 'Mario Rossi'
-// };
-// const requestOptions = {
-// method: 'POST',
-// headers: {
-// 'Content-Type': 'application/json'
-// },
-// body: JSON.stringify(postData)
-// };
-// async function inviaDati() {
-// try {
-// const response = await fetch(
-// 'https://jsonplaceholder.typicode.com/posts',
-// requestOptions
-// );
-// // Controlla se la risposta è valida
-// if (!response.ok) {
-// throw new Error('Errore nella richiesta');
-// }
-// // Converte la risposta JSON in oggetto JavaScript
-// const data = await response.json();
-// console.log('Risposta del server:');
-// console.log(data);
-// }
-// catch(error) {
-// console.log('Errore:');
-// console.error(error);
-// }
-// }
-// inviaDati();
-
-
+console.log('🔧 Backend endpoint: http://localhost:8080/api/v1/guest/registrazione');
