@@ -85,3 +85,10 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
+
+// =============FETCH API===================
+
+
+//Inviare email e password, lato backend confronta con il JWT, se corrispondono l'utene viene autenticato e può fare l'accesso.  
+

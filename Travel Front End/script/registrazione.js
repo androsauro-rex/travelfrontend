@@ -41,6 +41,46 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('✅ Form validation inizializzato');
 });
 
+
+  const UrlRegistrazione = "http://localhost:8080/api/v1/guest/registrazione";
+  
+  const datiUtente = {
+    nome: nameInput.value.trim(),
+    cognome: surnameInput.value.trim(),
+    nickname: nicknameInput.value.trim(),
+    email : emailInput.value.trim(),
+    eta: parseInt(emailInput.value.trim()),
+    password: passwordInput.value.trim(),
+  }
+
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify(datiUtente)
+  }
+
+  async function registrazioneUtente() {
+    try{
+      const response = await fetch(UrlRegistrazione, requestOptions);
+      if (!response.ok) {
+      throw new Error('Errore nella richiesta');
+      }
+      const data = await response.json();
+      console.log('Risposta del server:');
+      console.log(data);
+    }catch(error) {
+console.log('Errore:');
+console.error(error);
+}
+  }
+
+  registrazioneUtente();
+  
+
+
 // ================= VALIDATION FUNCTIONS =================
 
 function validateName() {
@@ -410,3 +450,49 @@ function resetButton() {
 
 console.log('✅ Form validation script caricato');
 console.log('🔧 Backend endpoint: http://localhost:8080/api/auth/register');
+
+// =============FETCH API===================
+
+//Invia tutti i dati dell'utente che si registra (nome, cognome, nickname ecc). Dati JSON dell'utente.
+//Creare oggetto javascript in cui inserisco i dati raccolti dagli input del form. 
+
+
+
+
+
+
+
+// const postData = {
+// titolo: 'JavaScript',
+// autore: 'Mario Rossi'
+// };
+// const requestOptions = {
+// method: 'POST',
+// headers: {
+// 'Content-Type': 'application/json'
+// },
+// body: JSON.stringify(postData)
+// };
+// async function inviaDati() {
+// try {
+// const response = await fetch(
+// 'https://jsonplaceholder.typicode.com/posts',
+// requestOptions
+// );
+// // Controlla se la risposta è valida
+// if (!response.ok) {
+// throw new Error('Errore nella richiesta');
+// }
+// // Converte la risposta JSON in oggetto JavaScript
+// const data = await response.json();
+// console.log('Risposta del server:');
+// console.log(data);
+// }
+// catch(error) {
+// console.log('Errore:');
+// console.error(error);
+// }
+// }
+// inviaDati();
+
+
