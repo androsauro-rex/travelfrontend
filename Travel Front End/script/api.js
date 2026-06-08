@@ -136,3 +136,62 @@ async function apiEliminaItinerario(idItinerario) {
   if (!res.ok) throw new Error(await res.text() || "Eliminazione fallita");
   return true;
 }
+
+// ============================================================
+//  SPESE  —  collegamento al backend TravelBuddy
+// ============================================================
+
+// Traduce la tipologia dal frontend all'enum Java EnumTipologiaSpesa
+function traduciTipologiaSpesa(tipoFrontend) {
+  const mappa = {
+    "Trasporti": "TRASPORTO",
+    "Alloggi": "ALLOGGIO",
+    "Cibo": "CIBO",
+    "Attrazioni": "ATTRAZIONE",
+    "Shopping": "SHOPPING",
+    "Extra": "ALTRO"
+  };
+  return mappa[tipoFrontend] || "ALTRO";
+}
+
+// Costruisce il corpo di UNA spesa per il backend (SpesaDTO)
+// Frontend: { nome, tipologia, costo }  ->  Backend: { tipologia, costo, descrizioneSpesa }
+function costruisciBodySpesa(spesa) {
+  return {
+    tipologia: traduciTipologiaSpesa(spesa.tipologia),
+    costo: Number(spesa.costo),
+    descrizioneSpesa: spesa.nome   // il "nome" del frontend diventa descrizioneSpesa
+    // niente data: la mette il backend
+  };
+}
+
+// AGGIUNGE una spesa a un itinerario (ritorna la spesa creata, con id del DB)
+async function apiAggiungiSpesa(idItinerario, spesa) {
+  const res = await fetch(APP_BASE + "/user/itinerario/" + idItinerario + "/spesa", {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(costruisciBodySpesa(spesa))
+  });
+  if (!res.ok) throw new Error(await res.text() || "Aggiunta spesa fallita");
+  return res.json();
+}
+
+// ELENCA le spese di un itinerario
+async function apiGetSpese(idItinerario) {
+  const res = await fetch(APP_BASE + "/common/itinerario/" + idItinerario + "/spese", {
+    method: "GET",
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error(await res.text() || "Lettura spese fallita");
+  return res.json();
+}
+
+// ELIMINA una spesa dal DB
+async function apiEliminaSpesa(idSpesa) {
+  const res = await fetch(APP_BASE + "/user/spesa/" + idSpesa, {
+    method: "DELETE",
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error(await res.text() || "Eliminazione spesa fallita");
+  return true;
+}

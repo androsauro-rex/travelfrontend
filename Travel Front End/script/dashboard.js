@@ -94,6 +94,11 @@ visibilityToggle.addEventListener("change", () => {
 // ================= INIT =================
 
 document.addEventListener("DOMContentLoaded", () => {
+  // se non sei loggato, torna al login
+  if (typeof isLoggedIn === "function" && !isLoggedIn()) {
+    window.location.href = "login.html";
+    return;
+  }
   renderTrips();
   popolaTipologieSpese();
 });
@@ -110,8 +115,12 @@ function popolaTipologieSpese() {
 // ================= LOGOUT =================
 
 logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("currentUser");
+  if (typeof logoutPulisci === "function") {
+    logoutPulisci();
+  } else {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+  }
 
   showLogoutNotification();
 
@@ -206,7 +215,7 @@ function createEmptyTrip() {
 saveDraftBtn.addEventListener("click", () => saveTrip("DRAFT"));
 publishBtn.addEventListener("click", () => saveTrip("PUBLISHED"));
 
-function saveTrip(status) {
+async function saveTrip(status) {
   if (!currentTrip) return;
 
   // Raccolta dati dal form
@@ -217,20 +226,58 @@ function saveTrip(status) {
   currentTrip.budgetPianificato = budgetInput.value;
   currentTrip.status = status;
 
-  const index = trips.findIndex(t => t.id === currentTrip.id);
+  // ---- VALIDAZIONE dei campi che il backend pretende ----
+  if (!currentTrip.title) {
+    showToast("⚠️ Inserisci il titolo del viaggio", "warning");
+    return;
+  }
+  if (!currentTrip.destination) {
+    showToast("⚠️ Inserisci la destinazione", "warning");
+    return;
+  }
+  if (!currentTrip.startDate || !currentTrip.endDate) {
+    showToast("⚠️ Inserisci le date del viaggio", "warning");
+    return;
+  }
+  const budget = parseFloat(currentTrip.budgetPianificato);
+  if (isNaN(budget) || budget <= 0) {
+    showToast("⚠️ Il budget deve essere maggiore di 0", "warning");
+    return;
+  }
+  if (!currentTrip.days || currentTrip.days.length === 0) {
+    showToast("⚠️ Genera almeno un giorno prima di salvare", "warning");
+    return;
+  }
 
-  if (index >= 0) trips[index] = currentTrip;
-  else trips.push(currentTrip);
+  // ---- INVIO AL BACKEND ----
+  try {
+    // backendId: presente solo se l'itinerario è già stato salvato sul DB
+    if (currentTrip.backendId) {
+      // esiste già -> MODIFICA (PUT, strategia fotografia)
+      await apiModificaItinerario(currentTrip.backendId, currentTrip);
+    } else {
+      // nuovo -> CREA, e salvo l'id reale del DB
+      const creato = await apiCreaItinerario(currentTrip);
+      currentTrip.backendId = creato.id;
+    }
 
-  localStorage.setItem("trips", JSON.stringify(trips));
+    // salvo anche in locale (per ricaricare la pagina senza riscaricare dal server)
+    const index = trips.findIndex(t => t.id === currentTrip.id);
+    if (index >= 0) trips[index] = currentTrip;
+    else trips.push(currentTrip);
+    localStorage.setItem("trips", JSON.stringify(trips));
 
-  renderTrips();
-  closeModal();
+    renderTrips();
+    closeModal();
 
-  if (status === "DRAFT") {
-    showToast("✅ Itinerario salvato come bozza", "success");
-  } else {
-    showToast("🎉 Itinerario pubblicato!", "success");
+    if (status === "DRAFT") {
+      showToast("✅ Itinerario salvato come bozza", "success");
+    } else {
+      showToast("🎉 Itinerario pubblicato e salvato nel database!", "success");
+    }
+
+  } catch (err) {
+    showToast("❌ Errore salvataggio: " + err.message, "error");
   }
 }
 
@@ -588,11 +635,19 @@ function renderTrips() {
 
     openBtn.onclick = () => openModal(trip);
 
-    delBtn.onclick = () => {
-      if (confirm("Sei sicuro di voler eliminare questo itinerario?")) {
+    delBtn.onclick = async () => {
+      if (!confirm("Sei sicuro di voler eliminare questo itinerario?")) return;
+      try {
+        // se è già sul DB, lo cancello anche lì
+        if (trip.backendId) {
+          await apiEliminaItinerario(trip.backendId);
+        }
         trips = trips.filter(t => t.id !== trip.id);
         localStorage.setItem("trips", JSON.stringify(trips));
         renderTrips();
+        showToast("🗑️ Itinerario eliminato", "warning");
+      } catch (err) {
+        showToast("❌ Errore eliminazione: " + err.message, "error");
       }
     };
 
@@ -707,29 +762,64 @@ addSpeseExtraBtn.addEventListener("click", () => {
   showToast("✅ Spesa aggiunta", "success");
 });
 
-function deleteSpesaExtra(spesaId) {
+async function deleteSpesaExtra(spesaId) {
   if (!speseTripRef || !speseTripRef.speseExtra) return;
 
-  speseTripRef.speseExtra = speseTripRef.speseExtra.filter(s => s.id !== spesaId);
-  renderSpeseExtra();
-  showToast("❌ Spesa eliminata", "warning");
+  // trovo la spesa per sapere se è già nel DB
+  const spesa = speseTripRef.speseExtra.find(s => s.id === spesaId);
+
+  try {
+    // se è già salvata sul backend, la cancello anche lì
+    if (spesa && spesa.backendId) {
+      await apiEliminaSpesa(spesa.backendId);
+    }
+
+    speseTripRef.speseExtra = speseTripRef.speseExtra.filter(s => s.id !== spesaId);
+
+    // aggiorno il localStorage
+    const index = trips.findIndex(t => t.id === speseTripRef.id);
+    if (index >= 0) trips[index] = speseTripRef;
+    localStorage.setItem("trips", JSON.stringify(trips));
+
+    renderSpeseExtra();
+    showToast("❌ Spesa eliminata", "warning");
+
+  } catch (err) {
+    showToast("❌ Errore eliminazione spesa: " + err.message, "error");
+  }
 }
 
 // Salva le spese nel localStorage
-saveSpeseBtn.addEventListener("click", () => {
+saveSpeseBtn.addEventListener("click", async () => {
   if (!speseTripRef) return;
 
-  const index = trips.findIndex(t => t.id === speseTripRef.id);
-  if (index >= 0) trips[index] = speseTripRef;
+  // le spese vanno nel DB legate all'itinerario: serve il suo id sul backend
+  if (!speseTripRef.backendId) {
+    showToast("⚠️ Salva prima l'itinerario, poi le spese", "warning");
+    return;
+  }
 
-  localStorage.setItem("trips", JSON.stringify(trips));
+  try {
+    // mando al backend SOLO le spese nuove (senza backendId), per non duplicare
+    const speseNuove = (speseTripRef.speseExtra || []).filter(s => !s.backendId);
 
-  // QUI in futuro: invio al backend delle spese collegate all'itinerario
-  // (tabella "spese": titolo/nome, tipologia, costo)
-  // inviaSpeseAlBackend(speseTripRef.id, speseTripRef.speseExtra);
+    for (const spesa of speseNuove) {
+      const creata = await apiAggiungiSpesa(speseTripRef.backendId, spesa);
+      // segno la spesa come "salvata" mettendole l'id reale del DB
+      spesa.backendId = creata.id;
+    }
 
-  closeSpeseModal();
-  showToast("💾 Spese salvate", "success");
+    // aggiorno anche il localStorage
+    const index = trips.findIndex(t => t.id === speseTripRef.id);
+    if (index >= 0) trips[index] = speseTripRef;
+    localStorage.setItem("trips", JSON.stringify(trips));
+
+    closeSpeseModal();
+    showToast("💾 Spese salvate nel database", "success");
+
+  } catch (err) {
+    showToast("❌ Errore salvataggio spese: " + err.message, "error");
+  }
 });
 
 // ================= TOAST =================
